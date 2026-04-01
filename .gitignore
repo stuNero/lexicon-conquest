@@ -1,0 +1,112 @@
+# =========================
+# GENERAL
+# =========================
+
+.DS_Store
+Thumbs.db
+*.log
+*.tmp
+*.swp
+
+# =========================
+# NODE / REACT
+# =========================
+
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Build output
+
+build/
+dist/
+.next/
+out/
+
+# Environment files
+
+.env
+.env.*
+!.env.example
+
+# Cache
+
+.cache/
+.parcel-cache/
+
+# =========================
+# .NET / C#
+# =========================
+
+bin/
+obj/
+*.user
+*.rsuser
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Rider / VSCode / VS
+
+.vs/
+.vscode/
+.idea/
+
+# Logs
+
+*.log
+
+# NuGet
+
+*.nupkg
+*.snupkg
+packages/
+.nuget/
+
+# Publish output
+
+publish/
+*.publish/
+
+# =========================
+# DATABASES
+# =========================
+
+*.db
+*.sqlite
+*.sqlite3
+
+# =========================
+# TEST OUTPUT
+# =========================
+
+TestResults/
+coverage/
+*.coverage
+*.coveragexml
+
+# =========================
+# OS GENERATED
+# =========================
+
+ehthumbs.db
+Desktop.ini
+
+# =========================
+# SECRETS (IMPORTANT)
+# =========================
+
+secrets.json
+appsettings.Development.json
+
+# =========================
+# OPTIONAL (UNCOMMENT IF NEEDED)
+# =========================
+
+# wwwroot/
+
+# migrations/
+
+# logs/
