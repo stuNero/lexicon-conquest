@@ -1,4 +1,4 @@
-# lexicon-conquest
+# Lexicon Conquest
 A wordgame project for the Test, Integration och Leverans course.
 ## Contributors:
 - Amir Jafari ➡️ https://github.com/amirhamza247
