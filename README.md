@@ -3,9 +3,12 @@ _A wordgame project for the '__Test, Integration och Leverans course__'._
 <img src="public/demo-board.png" style="width:400px">
 
 ## Description
-A grid-styled wordgame where you guess the word of a tile to capture it and then conquer the world! 
+A grid-styled wordgame where you guess the word of a tile to capture it and then conquer the world!
+A player traverses the grid by capturing tiles, you win by either reaching a max score or conquering your
+opponents tiles.
 ## Game Rules
 - __Turn-Based__
+  - With a turn timer
 - __Action Points__ for each player, starting with 1
   - One action point per controlled tile!
 - __Capture Tiles__ by guessing the word
