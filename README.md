@@ -23,7 +23,7 @@ A grid-styled wordgame where you guess the word of a tile to capture it and then
 ## How To Run
 ### Needs to be installed:
 - Nodejs v24.14
-1. Clone the project: <br/>``` git clone git@github.com:stuNero/lexicon-conquest```
+1. Clone the project: <br/>``` git clone git@github.com:stuNero/lexicon-conquest.git```
 2. Run in terminal:
 - ```npm install```
 - ```npm run dev```
