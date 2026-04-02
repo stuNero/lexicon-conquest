@@ -1,1 +1,22 @@
 @import "tailwindcss";
+
+
+@media (orientation: portrait) {
+  .game {
+    display: none;
+  }
+
+  .rotate-message {
+    display: flex;
+  }
+}
+
+@media (orientation: landscape) {
+  .game {
+    display: block;
+  }
+
+  .rotate-message {
+    display: none;
+  }
+}
