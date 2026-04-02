@@ -3,8 +3,8 @@ import { Check, X } from 'lucide-react';
 export default function LobbyPage() {
   const players = [
     { name: "MaskMax", ready: true },
-    { name: "HaviMan", ready: false },
-    { name: "KalamataOliver", ready: false },
+    { name: "HaviMan", ready: true },
+    { name: "KalamataOliver", ready: true },
     { name: "AmirBro", ready: true }];
 
   return <div className="
