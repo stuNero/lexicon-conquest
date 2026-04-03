@@ -22,6 +22,8 @@ opponents tiles.
   - __Domination__
     - Capture every controlled tile of the other players
 - __Special Tiles__ can be captured for unique abilities!
+## Turn Flow
+<img src="public/game-flow.png" style="width:800px">
 
 ## How To Run
 ### Needs to be installed:
