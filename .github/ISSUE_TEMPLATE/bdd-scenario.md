@@ -9,8 +9,8 @@ assignees: ''
 
 ```gherkin
 
-GIVEN 
-WHEN 
-THEN 
+Given
+When 
+Then 
 
 ```
