@@ -5,7 +5,16 @@ using backend;
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddCors();
 
+builder.Services.AddDistributedMemoryCache();
+builder.Services.AddSession(option =>
+{
+    option.Cookie.HttpOnly = true;
+    option.Cookie.IsEssential = true;
+}
+);
+
 var app = builder.Build();
+app.UseSession();
 
 app.UseCors(policy =>
     policy.AllowAnyOrigin()
@@ -13,19 +22,9 @@ app.UseCors(policy =>
           .AllowAnyHeader());
 
 GameEngine gameEngine = new GameEngine();
-List<Player> players = [];
-foreach (Player player in gameEngine.gameSessions[0].players)
-{
-    players.Add(player);
-}
-Player[] playersArray = players.ToArray();
 
-var playerNamesJSON = JsonSerializer.Serialize(playersArray);
-app.MapGet("/api/getSessions", () => new
-{
-    players = playersArray,
-    sessionURL = gameEngine.gameSessions[0].Url
-});
 
+ApiRoutes.GetPlayers(app, gameEngine.gameSessions[0]);
+ApiRoutes.GetSessionURL(app, gameEngine.gameSessions[0]);
 
 app.Run();
