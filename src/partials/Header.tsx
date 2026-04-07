@@ -4,7 +4,7 @@ export default function Header() {
     className="
     w-full
     h-30
-    bg-stone-400
+    bg-stone-700
     backdrop-blur-lg
     fixed z-500
     flex flex-col
