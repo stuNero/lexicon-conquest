@@ -1,4 +1,4 @@
-# Lexicon Conquest
+# LexiConquest
 _A wordgame project for the '__Test, Integration och Leverans course__'._
 
 *demo picture | not final product* <br/>
