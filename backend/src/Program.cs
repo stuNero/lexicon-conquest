@@ -25,4 +25,5 @@ GameEngine engine = new GameEngine();
 
 Endpoints.GetSessions(app, engine);
 Endpoints.CreatePlayer(app, engine);
+Endpoints.DeleteSession(app, engine);
 app.Run();

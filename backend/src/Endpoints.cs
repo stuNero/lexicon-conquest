@@ -4,24 +4,10 @@ using System.Runtime.CompilerServices;
 using System.Security.Cryptography.X509Certificates;
 using System.Text.Json;
 using System.Text.Json.Nodes;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 public static class Endpoints
 {
-  public static void GetPlayers(WebApplication app, GameSession session)
-  {
-    List<Player> players = [];
-    foreach (Player player in session.players)
-    {
-      players.Add(player);
-    }
-    Player[] playersArray = players.ToArray();
-
-    var playerNamesJSON = JsonSerializer.Serialize(playersArray);
-    app.MapGet("/api/players", () => new
-    {
-      players = playersArray
-    });
-  }
   public record sessionObject(string Url, Player[] players);
   public static void GetSessions(WebApplication app, GameEngine engine)
   {
@@ -61,6 +47,19 @@ public static class Endpoints
         return Results.NotFound();
       }
       session.players.Add(newPlayer);
+      return Results.Ok();
+    });
+  }
+  public static void DeleteSession(WebApplication app, GameEngine engine)
+  {
+    app.MapDelete("/api/sessions/{url}", (string url) =>
+    {
+      if (!engine.gameSessions.Exists(s => s.Url == url))
+      {
+        return Results.NotFound(new { message = $"Session with url: {url} could not be found" });
+      }
+      engine.gameSessions.RemoveAll(s => s.Url == url);
+
       return Results.Ok();
     });
   }
