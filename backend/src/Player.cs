@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Identity.Data;
+
 namespace backend;
 
 public class Player

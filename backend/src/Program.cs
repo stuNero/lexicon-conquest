@@ -21,10 +21,8 @@ app.UseCors(policy =>
           .AllowAnyMethod()
           .AllowAnyHeader());
 
-GameEngine gameEngine = new GameEngine();
+GameEngine engine = new GameEngine();
 
-
-ApiRoutes.GetPlayers(app, gameEngine.gameSessions[0]);
-ApiRoutes.GetSessionURL(app, gameEngine.gameSessions[0]);
-
+Endpoints.GetSessions(app, engine);
+Endpoints.CreatePlayer(app, engine);
 app.Run();
