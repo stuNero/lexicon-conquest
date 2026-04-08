@@ -63,4 +63,29 @@ public static class Endpoints
       return Results.Ok();
     });
   }
+  public static void ToggleReady(WebApplication app, GameEngine engine)
+  {
+    app.MapPut("/api/players/", (string url, string userName) =>
+    {
+      foreach (GameSession session in engine.gameSessions)
+      {
+        if (session.Url == url)
+        {
+          foreach (Player player in session.players)
+          {
+            if (player.UserName == userName)
+            {
+              if (player.Ready)
+                player.Ready = false;
+              else if (!player.Ready)
+                player.Ready = true;
+              return Results.Ok();
+            }
+          }
+          return Results.NotFound(new { message = $"Player with username: {userName} could not be found" });
+        }
+      }
+      return Results.NotFound(new { message = $"Session with url: {url} could not be found" });
+    });
+  }
 }
