@@ -12,6 +12,19 @@
       "item": [
         {
           "name": "Get All",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
           "protocolProfileBehavior": {
             "disableBodyPruning": true
           },
@@ -38,21 +51,19 @@
           "response": []
         },
         {
-          "name": "Create Player",
+          "name": "Get By URL",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
           "request": {
-            "method": "POST",
+            "method": "GET",
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\r\n    \"UserName\":\"lolplayer\"\r\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
+              "raw": ""
             },
             "url": {
-              "raw": "http://localhost:5001/api/sessions/ceffd310",
+              "raw": "http://localhost:5001/api/sessions?url={{sessionUrl}}",
               "protocol": "http",
               "host": [
                 "localhost"
@@ -60,8 +71,13 @@
               "port": "5001",
               "path": [
                 "api",
-                "sessions",
-                "ceffd310"
+                "sessions"
+              ],
+              "query": [
+                {
+                  "key": "url",
+                  "value": "{{sessionUrl}}"
+                }
               ]
             }
           },
@@ -71,6 +87,45 @@
           "name": "Delete Specific",
           "request": {
             "method": "DELETE",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            },
+            "url": {
+              "raw": "http://localhost:5001/api/sessions/{{sessionUrl}}",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "5001",
+              "path": [
+                "api",
+                "sessions",
+                "{{sessionUrl}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "let json = pm.response.json();\r",
+                  "pm.environment.set(\"sessionUrl\", json.url);"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
             "header": [],
             "body": {
               "mode": "raw",
@@ -90,9 +145,47 @@
             }
           },
           "response": []
+        }
+      ]
+    },
+    {
+      "name": "Players",
+      "item": [
+        {
+          "name": "Get By Username",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            },
+            "url": {
+              "raw": "http://localhost:5001/api/sessions?username={{playerUsername}}",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "5001",
+              "path": [
+                "api",
+                "sessions"
+              ],
+              "query": [
+                {
+                  "key": "username",
+                  "value": "{{playerUsername}}"
+                }
+              ]
+            }
+          },
+          "response": []
         },
         {
-          "name": "Toggle Player Ready",
+          "name": "Toggle Ready",
           "request": {
             "method": "PUT",
             "header": [],
@@ -128,6 +221,62 @@
                   "value": "nero",
                   "type": "text"
                 }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "let json = pm.response.json();\r",
+                  "\r",
+                  "pm.environment.set(\"playerUsername\",json.userName);"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"UserName\":\"lolplayer\",\r\n    \"ready\" : true\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:5001/api/sessions/{{sessionUrl}}",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "5001",
+              "path": [
+                "api",
+                "sessions",
+                "{{sessionUrl}}"
               ]
             }
           },
