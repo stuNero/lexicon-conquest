@@ -9,14 +9,14 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 public static class Endpoints
 {
   public record sessionObject(string Url, Player[] players);
-  public static void GetSessions(WebApplication app, GameEngine engine)
+  public static void GetSessions(WebApplication app, GameServer Server)
   {
     app.MapGet("/api/sessions", (string? url) =>
     {
       // For specified search:
       if (!string.IsNullOrWhiteSpace(url))
       {
-        return engine.gameSessions
+        return Server.gameSessions
         .Where(s => s.Url == url)
         .Select(s => new sessionObject(
           s.Url,
@@ -24,7 +24,7 @@ public static class Endpoints
           ));
       }
       // For generic search
-      return engine.gameSessions
+      return Server.gameSessions
       .Select(s => new sessionObject(
         s.Url,
         s.players.ToArray()
@@ -32,7 +32,7 @@ public static class Endpoints
     });
   }
   public record NewPlayer(string userName, bool ready = false);
-  public static void CreatePlayer(WebApplication app, GameEngine engine)
+  public static void CreatePlayer(WebApplication app, GameServer Server)
   {
     app.MapPost("/api/sessions/{url}", (string url, NewPlayer createP) =>
     {
@@ -41,7 +41,7 @@ public static class Endpoints
         userName: createP.userName,
         ready: createP.ready
       );
-      var session = engine.gameSessions.FirstOrDefault(s => s.Url == url);
+      var session = Server.gameSessions.FirstOrDefault(s => s.Url == url);
       if (session == null)
       {
         return Results.NotFound();
@@ -50,24 +50,24 @@ public static class Endpoints
       return Results.Ok();
     });
   }
-  public static void DeleteSession(WebApplication app, GameEngine engine)
+  public static void DeleteSession(WebApplication app, GameServer Server)
   {
     app.MapDelete("/api/sessions/{url}", (string url) =>
     {
-      if (!engine.gameSessions.Exists(s => s.Url == url))
+      if (!Server.gameSessions.Exists(s => s.Url == url))
       {
         return Results.NotFound(new { message = $"Session with url: {url} could not be found" });
       }
-      engine.gameSessions.RemoveAll(s => s.Url == url);
+      Server.gameSessions.RemoveAll(s => s.Url == url);
 
       return Results.Ok();
     });
   }
-  public static void ToggleReady(WebApplication app, GameEngine engine)
+  public static void ToggleReady(WebApplication app, GameServer Server)
   {
     app.MapPut("/api/players/", (string url, string userName) =>
     {
-      foreach (GameSession session in engine.gameSessions)
+      foreach (GameSession session in Server.gameSessions)
       {
         if (session.Url == url)
         {

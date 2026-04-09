@@ -21,10 +21,9 @@ app.UseCors(policy =>
           .AllowAnyMethod()
           .AllowAnyHeader());
 
-GameEngine engine = new GameEngine();
-
-Endpoints.GetSessions(app, engine);
-Endpoints.CreatePlayer(app, engine);
-Endpoints.DeleteSession(app, engine);
-Endpoints.ToggleReady(app, engine);
+GameServer Server = new GameServer();
+Endpoints.GetSessions(app, Server);
+Endpoints.CreatePlayer(app, Server);
+Endpoints.DeleteSession(app, Server);
+Endpoints.ToggleReady(app, Server);
 app.Run();

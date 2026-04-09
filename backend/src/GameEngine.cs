@@ -1,9 +1,9 @@
 namespace backend;
 
-public class GameEngine
+public class GameServer
 {
   public List<GameSession> gameSessions;
-  public GameEngine()
+  public GameServer()
   {
     gameSessions = new List<GameSession>();
     gameSessions.Add(new GameSession());
