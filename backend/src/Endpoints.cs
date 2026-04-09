@@ -41,11 +41,36 @@ public static class Endpoints
   });
 }
 
-
+// get all session
   public record sessionObject(string Url, Player[] players);
   public static void GetSessions(WebApplication app, GameEngine engine)
   {
     app.MapGet("/api/sessions", (string? url) =>
+    {
+      // For specified search:
+      if (!string.IsNullOrWhiteSpace(url))
+      {
+        return engine.gameSessions
+        .Where(s => s.Url == url)
+        .Select(s => new sessionObject(
+          s.Url,
+          s.players.ToArray()
+          ));
+      }
+      // For generic search
+      return engine.gameSessions
+      .Select(s => new sessionObject(
+        s.Url,
+        s.players.ToArray()
+        ));
+    });
+  }
+
+  // get session by id
+  // public record sessionObject(string Url, Player[] players);
+  public static void GetSessionsById(WebApplication app, GameEngine engine)
+  {
+    app.MapGet("/api/sessions/{url}", (string? url) =>
     {
       // For specified search:
       if (!string.IsNullOrWhiteSpace(url))
@@ -71,16 +96,27 @@ public static class Endpoints
   {
     app.MapPost("/api/sessions/{url}", (string url, NewPlayer createP) =>
     {
-      Player newPlayer = new Player
-      (
-        userName: createP.userName,
-        ready: createP.ready
-      );
       var session = engine.gameSessions.FirstOrDefault(s => s.Url == url);
       if (session == null)
       {
         return Results.NotFound();
       }
+
+      // limit to only 4 players
+      if (session.players.Count >= 4) // we use >= because index starts from 0 
+      {
+        return Results.BadRequest(new
+        {
+          message = "Session is full (max 4 players)"
+        });
+      }
+
+      Player newPlayer = new Player
+      (
+        userName: createP.userName,
+        ready: createP.ready
+      );
+      
       session.players.Add(newPlayer);
       return Results.Ok();
     });

@@ -8,6 +8,5 @@ public class GameEngine
     gameSessions = new List<GameSession>();
     gameSessions.Add(new GameSession());
     gameSessions.Add(new GameSession());
-    gameSessions.Add(new GameSession());
   }
 }

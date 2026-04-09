@@ -24,6 +24,7 @@ app.UseCors(policy =>
 GameEngine engine = new GameEngine();
 
 Endpoints.GetSessions(app, engine);
+Endpoints.GetSessionsById(app, engine);
 Endpoints.CreateSession(app, engine);
 Endpoints.CreatePlayer(app, engine);
 Endpoints.DeleteSession(app, engine);
