@@ -8,6 +8,41 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 public static class Endpoints
 {
+
+// new session endpoint
+  public record NewSession(string url);
+ public static void CreateSession(WebApplication app, GameEngine engine)
+  {
+  app.MapPost("/api/sessions", () =>
+  {
+
+    string url;
+
+    do
+    {
+      url = Guid.NewGuid().ToString("N")[..8];
+    }
+    while (engine.gameSessions.Any(s => s.Url == url));
+
+    var session = new GameSession
+    {
+      Url = url,
+      players = new List<Player>()
+    };
+
+    engine.gameSessions.Add(session);
+
+    // return response = new(true, $"Your session id is created: {url}");
+    return Results.Created($"/api/sessions/{url}", new
+    {
+      message = "Session created",
+      url = url
+    });
+
+  });
+}
+
+
   public record sessionObject(string Url, Player[] players);
   public static void GetSessions(WebApplication app, GameEngine engine)
   {
@@ -32,6 +67,7 @@ public static class Endpoints
     });
   }
   public record NewPlayer(string userName, bool ready = false);
+
   public static void CreatePlayer(WebApplication app, GameEngine engine)
   {
     app.MapPost("/api/sessions/{url}", (string url, NewPlayer createP) =>
