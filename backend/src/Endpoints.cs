@@ -41,7 +41,8 @@ public static class Endpoints
   });
 }
 
-// get all session
+  // get all session
+// get session by id can be accessed via url query 
   public record sessionObject(string Url, Player[] players);
   public static void GetSessions(WebApplication app, GameEngine engine)
   {
@@ -66,30 +67,7 @@ public static class Endpoints
     });
   }
 
-  // get session by id
-  // public record sessionObject(string Url, Player[] players);
-  public static void GetSessionsById(WebApplication app, GameEngine engine)
-  {
-    app.MapGet("/api/sessions/{url}", (string? url) =>
-    {
-      // For specified search:
-      if (!string.IsNullOrWhiteSpace(url))
-      {
-        return engine.gameSessions
-        .Where(s => s.Url == url)
-        .Select(s => new sessionObject(
-          s.Url,
-          s.players.ToArray()
-          ));
-      }
-      // For generic search
-      return engine.gameSessions
-      .Select(s => new sessionObject(
-        s.Url,
-        s.players.ToArray()
-        ));
-    });
-  }
+
   public record NewPlayer(string userName, bool ready = false);
 
   public static void CreatePlayer(WebApplication app, GameEngine engine)
