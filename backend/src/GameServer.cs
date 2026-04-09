@@ -6,8 +6,5 @@ public class GameServer
   public GameServer()
   {
     gameSessions = new List<GameSession>();
-    gameSessions.Add(new GameSession());
-    gameSessions.Add(new GameSession());
-    gameSessions.Add(new GameSession());
   }
 }

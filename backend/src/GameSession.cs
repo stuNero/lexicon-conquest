@@ -8,11 +8,5 @@ public class GameSession
   {
     Url = Guid.NewGuid().ToString().Substring(0, 8);
     players = new List<Player>();
-
-    players.Add(new("nero", true));
-    players.Add(new("oliver", false));
-    players.Add(new("amir", true));
-    players.Add(new("haviet", false));
-
   }
 }
