@@ -26,4 +26,5 @@ Endpoints.GetSessions(app, Server);
 Endpoints.CreatePlayer(app, Server);
 Endpoints.DeleteSession(app, Server);
 Endpoints.ToggleReady(app, Server);
+Endpoints.CreateSession(app, Server);
 app.Run();
