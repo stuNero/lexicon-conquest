@@ -20,7 +20,7 @@ public static class Endpoints
 
     do
     {
-      url = Guid.NewGuid().ToString("N")[..8];
+      url = Guid.NewGuid().ToString().Substring(0,8);
     }
     while (engine.gameSessions.Any(s => s.Url == url));
 
@@ -32,7 +32,6 @@ public static class Endpoints
 
     engine.gameSessions.Add(session);
 
-    // return response = new(true, $"Your session id is created: {url}");
     return Results.Created($"/api/sessions/{url}", new
     {
       message = "Session created",
