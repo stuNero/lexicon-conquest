@@ -62,7 +62,7 @@ public static class Endpoints
         ));
     });
   }
-  public record NewPlayer(string userName, bool ready = false);
+  public record NewPlayer(Guid id, string userName, bool ready = false);
   public static void CreatePlayer(WebApplication app, GameServer Server)
   {
     app.MapPost("/api/sessions/{url}", (string url, NewPlayer createP) =>
