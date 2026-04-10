@@ -96,7 +96,7 @@ public static class Endpoints
   }
   public static void ToggleReady(WebApplication app, GameServer Server)
   {
-    app.MapPut("/api/players/", (string url, string userName) =>
+    app.MapPut("/api/players/", (string url, Guid id) =>
     {
       foreach (GameSession session in Server.gameSessions)
       {
@@ -104,7 +104,7 @@ public static class Endpoints
         {
           foreach (Player player in session.players)
           {
-            if (player.UserName == userName)
+            if (player.id == id)
             {
               if (player.Ready)
                 player.Ready = false;
@@ -113,7 +113,7 @@ public static class Endpoints
               return Results.Ok();
             }
           }
-          return Results.NotFound(new { message = $"Player with username: {userName} could not be found" });
+          return Results.NotFound(new { message = $"Player with id: {id} could not be found" });
         }
       }
       return Results.NotFound(new { message = $"Session with url: {url} could not be found" });
