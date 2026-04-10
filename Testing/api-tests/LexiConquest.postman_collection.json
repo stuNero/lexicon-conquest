@@ -36,12 +36,12 @@
               "raw": ""
             },
             "url": {
-              "raw": "http://localhost:5001/api/sessions",
+              "raw": "http://localhost:{{port}}/api/sessions",
               "protocol": "http",
               "host": [
                 "localhost"
               ],
-              "port": "5001",
+              "port": "{{port}}",
               "path": [
                 "api",
                 "sessions"
@@ -52,6 +52,38 @@
         },
         {
           "name": "Get By URL",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status code is 200\", () =>\r",
+                  "{\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "let json = pm.response.json();\r",
+                  "pm.test(\"Response should not be null\", () =>\r",
+                  "{\r",
+                  "    pm.expect(json).to.not.be.null;\r",
+                  "})"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
           "protocolProfileBehavior": {
             "disableBodyPruning": true
           },
@@ -63,12 +95,12 @@
               "raw": ""
             },
             "url": {
-              "raw": "http://localhost:5001/api/sessions?url={{sessionUrl}}",
+              "raw": "http://localhost:{{port}}/api/sessions?url={{sessionUrl}}",
               "protocol": "http",
               "host": [
                 "localhost"
               ],
-              "port": "5001",
+              "port": "{{port}}",
               "path": [
                 "api",
                 "sessions"
@@ -84,7 +116,80 @@
           "response": []
         },
         {
+          "name": "Get By URL(Wrong url)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status code is 200\", () =>\r",
+                  "{\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "let json = pm.response.json();\r",
+                  "pm.test(\"Response should be empty array\", () => {\r",
+                  "    pm.expect(json).to.be.empty;\r",
+                  "})"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:{{port}}/api/sessions?url={{sessionUrl(wrong)}}",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "{{port}}",
+              "path": [
+                "api",
+                "sessions"
+              ],
+              "query": [
+                {
+                  "key": "url",
+                  "value": "{{sessionUrl(wrong)}}"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
           "name": "Delete Specific",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Session should be deleted successfully\", function () {\r",
+                  "    pm.expect(pm.response.code).to.be.oneOf([200,204]);\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
           "request": {
             "method": "DELETE",
             "header": [],
@@ -93,12 +198,12 @@
               "raw": ""
             },
             "url": {
-              "raw": "http://localhost:5001/api/sessions/{{sessionUrl}}",
+              "raw": "http://localhost:{{port}}/api/sessions/{{sessionUrl}}",
               "protocol": "http",
               "host": [
                 "localhost"
               ],
-              "port": "5001",
+              "port": "{{port}}",
               "path": [
                 "api",
                 "sessions",
@@ -132,12 +237,12 @@
               "raw": ""
             },
             "url": {
-              "raw": "http://localhost:5001/api/sessions",
+              "raw": "http://localhost:{{port}}/api/sessions",
               "protocol": "http",
               "host": [
                 "localhost"
               ],
-              "port": "5001",
+              "port": "{{port}}",
               "path": [
                 "api",
                 "sessions"
@@ -151,39 +256,6 @@
     {
       "name": "Players",
       "item": [
-        {
-          "name": "Get By Username",
-          "protocolProfileBehavior": {
-            "disableBodyPruning": true
-          },
-          "request": {
-            "method": "GET",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": ""
-            },
-            "url": {
-              "raw": "http://localhost:5001/api/sessions?username={{playerUsername}}",
-              "protocol": "http",
-              "host": [
-                "localhost"
-              ],
-              "port": "5001",
-              "path": [
-                "api",
-                "sessions"
-              ],
-              "query": [
-                {
-                  "key": "username",
-                  "value": "{{playerUsername}}"
-                }
-              ]
-            }
-          },
-          "response": []
-        },
         {
           "name": "Toggle Ready",
           "request": {
@@ -199,12 +271,12 @@
               }
             },
             "url": {
-              "raw": "http://localhost:5001/api/players/?url=6e071051&userName=nero",
+              "raw": "http://localhost:{{port}}/api/players/?url={{sessionUrl}}&id={{playerID}}",
               "protocol": "http",
               "host": [
                 "localhost"
               ],
-              "port": "5001",
+              "port": "{{port}}",
               "path": [
                 "api",
                 "players",
@@ -213,13 +285,11 @@
               "query": [
                 {
                   "key": "url",
-                  "value": "6e071051",
-                  "type": "text"
+                  "value": "{{sessionUrl}}"
                 },
                 {
-                  "key": "userName",
-                  "value": "nero",
-                  "type": "text"
+                  "key": "id",
+                  "value": "{{playerID}}"
                 }
               ]
             }
@@ -235,7 +305,7 @@
                 "exec": [
                   "let json = pm.response.json();\r",
                   "\r",
-                  "pm.environment.set(\"playerUsername\",json.userName);"
+                  "pm.environment.set(\"playerID\",json.id);"
                 ],
                 "type": "text/javascript",
                 "packages": {},
@@ -267,12 +337,12 @@
               }
             },
             "url": {
-              "raw": "http://localhost:5001/api/sessions/{{sessionUrl}}",
+              "raw": "http://localhost:{{port}}/api/sessions/{{sessionUrl}}",
               "protocol": "http",
               "host": [
                 "localhost"
               ],
-              "port": "5001",
+              "port": "{{port}}",
               "path": [
                 "api",
                 "sessions",
