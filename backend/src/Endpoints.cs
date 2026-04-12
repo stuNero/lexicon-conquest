@@ -9,12 +9,21 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 public static class Endpoints
 {
 
-// new session endpoint
+  // new session endpoint
+  public record CreateSessionRequest(string userName);
   public record NewSession(string url);
  public static void CreateSession(WebApplication app, GameEngine engine)
   {
-  app.MapPost("/api/sessions", () =>
+  app.MapPost("/api/sessions", (CreateSessionRequest request) =>
   {
+
+    if(request == null || string.IsNullOrWhiteSpace(request.userName))
+    {
+      return Results.BadRequest(new
+      {
+        message = "Request body is required and must include userName for the creator of the session."
+      });
+    }
 
     string url;
 
@@ -30,12 +39,18 @@ public static class Endpoints
       players = new List<Player>()
     };
 
+    // add creator as first player
+    session.players.Add(new Player(
+    userName: request.userName,
+    ready: false
+    ));
     engine.gameSessions.Add(session);
 
     return Results.Created($"/api/sessions/{url}", new
     {
       message = "Session created",
-      url = url
+      url = url,
+      players = session.players
     });
 
   });
