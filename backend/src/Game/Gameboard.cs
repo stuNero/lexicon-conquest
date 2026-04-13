@@ -14,6 +14,15 @@ public class Board
 
   public Board(int width, int height)
   {
+
+    // MIN: 2x2
+    if (width < 2 || height < 2)
+      throw new ArgumentException("Board must be at least 2x2");
+
+    // MAX: 25x25
+    if (width > 25 || height > 25)
+      throw new ArgumentException("Board cannot be larger than 25x25");
+
     _width = width;
     _height = height;
 
