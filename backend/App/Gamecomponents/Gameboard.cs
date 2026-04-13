@@ -1,4 +1,4 @@
-namespace backend.Game;
+namespace backend.Gamecomponents;
 
 // Board = hela spelplanen den är dynamisk så - var board = new Board(10, 10); när du behöver ett board så kan du bestämma storlek
 public class Board

@@ -1,5 +1,6 @@
 using Xunit;
-using backend.Game;
+using backend.Gamecomponents;
+using System.Linq;
 
 namespace backend.Tests;
 

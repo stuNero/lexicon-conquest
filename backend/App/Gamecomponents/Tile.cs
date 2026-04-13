@@ -1,4 +1,4 @@
-namespace backend.Game;
+namespace backend.Gamecomponents;
 
 // 1 Tile on the board
 public class Tile
