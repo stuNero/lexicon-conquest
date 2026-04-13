@@ -3,14 +3,21 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "scripts": {
-    "dev": "vite",
-    "build": "tsc -b && vite build",
-    "lint": "eslint .",
-    "preview": "vite preview"
-  },
+
+ "scripts": {
+  "start": "concurrently -n backend,vite -c blue,green npm:backend npm:dev",
+  "dev": "vite",
+  "backend": "dotnet run --project backend/App",
+  "build": "tsc -b && vite build",
+  "lint": "eslint .",
+  "preview": "vite preview",
+  "test:xunit": "dotnet test backend/MyApp.slnx",
+  "test:api": "newman run api-tests/LexiConquest.postman_collection.json"
+},
   "dependencies": {
     "@tailwindcss/vite": "^4.2.2",
+    "concurrently": "^9.2.1",
+    "D": "^1.0.0",
     "lucide": "^1.7.0",
     "lucide-react": "^1.7.0",
     "react": "^19.2.4",
