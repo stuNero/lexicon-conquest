@@ -1,10 +1,10 @@
 {
   "info": {
-    "_postman_id": "9495a8e1-4a8d-4263-81ff-9b4e94ae5fa9",
+    "_postman_id": "a16de664-b05e-4d7e-b3ae-ba3721e3d1e2",
     "name": "LexiConquest",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
     "_exporter_id": "50538068",
-    "_collection_link": "https://go.postman.co/collection/50538068-9495a8e1-4a8d-4263-81ff-9b4e94ae5fa9?source=collection_link"
+    "_collection_link": "https://go.postman.co/collection/50538068-a16de664-b05e-4d7e-b3ae-ba3721e3d1e2?source=collection_link"
   },
   "item": [
     {
@@ -221,7 +221,7 @@
               "script": {
                 "exec": [
                   "let json = pm.response.json();\r",
-                  "pm.environment.set(\"sessionUrl\", json.url);"
+                  "pm.collectionVariables.set(\"sessionUrl\", json.url);"
                 ],
                 "type": "text/javascript",
                 "packages": {},
@@ -353,6 +353,44 @@
           "response": []
         }
       ]
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "port",
+      "value": ""
+    },
+    {
+      "key": "sessionUrl",
+      "value": ""
+    },
+    {
+      "key": "playerID",
+      "value": ""
     }
   ]
 }
