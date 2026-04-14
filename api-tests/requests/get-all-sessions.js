@@ -1,6 +1,6 @@
 export default {
   method: 'GET',
-  url: '{{baseUrl}}/api/sessions'  // ← Blir http://localhost:5173/api/sessions
+  url: '{{baseUrl}}/api/sessions'  
 };
 
 export function postResponse() {
