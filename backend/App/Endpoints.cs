@@ -1,10 +1,5 @@
 namespace backend;
 
-using System.Runtime.CompilerServices;
-using System.Security.Cryptography.X509Certificates;
-using System.Text.Json;
-using System.Text.Json.Nodes;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 public static class Endpoints
 {
