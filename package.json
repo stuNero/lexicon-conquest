@@ -11,7 +11,7 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "test:xunit": "dotnet test backend/MyApp.slnx",
-    "test:api": "newman run api-tests/LexiConquest.postman_collection.json",
+   "test:api": "post-they run api-tests",
     "test:e2e": "npx bddgen && npx playwright test",
     "test": "npm run test:xunit && npm run test:api && npm run test:e2e"
   },
