@@ -46,7 +46,7 @@ jobs:
     - name: Run dotnet server
       run: |
         npm run backend &
-        npx wait-on http://localhost:5001
+        sleep 5
         echo "Server started"
     
     - name: Run all tests
