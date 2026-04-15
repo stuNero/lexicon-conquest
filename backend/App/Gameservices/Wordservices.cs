@@ -1,6 +1,6 @@
 namespace backend.App.GameServices;
 
-public sealed class WordService
+public class WordService
 {
   // Store all word lists in memory were using dictionary for this to use Key=filenames=category Words=values 
   // key = category name (file name without .txt)
