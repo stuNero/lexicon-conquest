@@ -1,0 +1,53 @@
+name: Testing
+
+on:
+  push:
+    branches: ["main", "DEV"]
+  pull_request:
+    branches: ["main", "DEV"]
+  
+jobs: 
+  build: 
+    runs-on: ubuntu-latest
+    
+    steps:
+
+    - uses: actions/checkout@v4
+
+    - name: Setup .Net
+      uses: actions/setup-dotnet@v4
+      with: 
+        dotnet-version: 10.0.x
+
+    - name: restore dependencies
+      working-directory: backend
+      run : dotnet restore
+
+    - name: build dotnet
+      working-directory: backend
+      run: dotnet build --no-restore
+
+    - name: Use Node.js 22
+      uses: actions/setup-node@v4
+      with:
+        node-version: 22
+        cache-dependency-path: package-lock.json
+        cache: npm
+
+    - name: Restore npm dependencies
+      run: npm ci
+
+    - name: Install playwright browsers
+      run: npx playwright install
+    
+    - name: build npm 
+      run: npm run build
+
+    - name: Run dotnet server
+      run: |
+        npm run backend &
+        sleep 5
+        echo "Server started"
+    
+    - name: Run all tests
+      run: npm test

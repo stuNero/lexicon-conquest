@@ -18,7 +18,7 @@ export default defineConfig({
     ['html', { outputFolder: 'playwright-report', open: 'never' }]
   ],
   use: {
-    baseURL: 'http://localhost:5173',
+    baseURL: 'http://localhost:5001',
     trace: 'retain-on-failure',
     screenshot: 'only-on-failure'
   },
