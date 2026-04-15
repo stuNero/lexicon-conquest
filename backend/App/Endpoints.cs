@@ -7,7 +7,7 @@ public static class Endpoints
   // new session endpoint
   public record CreateSessionRequest(string userName);
   public record NewSession(string url);
-  public static void CreateSession(WebApplication app, GameEngine engine)
+  public static void CreateSession(WebApplication app, GameServer engine)
   {
     app.MapPost("/api/sessions", (CreateSessionRequest request) =>
     {
@@ -80,11 +80,11 @@ public static class Endpoints
 
   public record NewPlayer(string userName, bool ready = false);
 
-  public static void CreatePlayer(WebApplication app, GameEngine engine)
+  public static void CreatePlayer(WebApplication app, GameServer server)
   {
     app.MapPost("/api/sessions/{url}", (string url, NewPlayer createP) =>
     {
-      var session = engine.gameSessions.FirstOrDefault(s => s.Url == url);
+      var session = server.gameSessions.FirstOrDefault(s => s.Url == url);
       if (session == null)
       {
         return Results.NotFound();
