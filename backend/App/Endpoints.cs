@@ -35,17 +35,14 @@ public static class Endpoints
       };
 
       // add creator as first player
-      session.players.Add(new Player(
-      userName: request.userName,
-      ready: false
-      ));
+      var newPlayer = new Player(userName: request.userName, ready: false);
+      session.players.Add(newPlayer);
       engine.gameSessions.Add(session);
 
       return Results.Created($"/api/sessions/{url}", new
       {
-        message = "Session created",
         url = url,
-        players = session.players
+        player = newPlayer
       });
 
     });

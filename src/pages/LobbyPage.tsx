@@ -1,6 +1,8 @@
 import { Link } from "react-router-dom";
 import { Check, X } from 'lucide-react';
 export default function LobbyPage() {
+
+
   const players = [
     { name: "MaskMax", ready: true },
     { name: "HaviMan", ready: true },

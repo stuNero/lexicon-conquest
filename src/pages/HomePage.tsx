@@ -1,6 +1,24 @@
 import { Link } from "react-router-dom";
+import { useState } from "react";
+import fetchJson from "../utils/useFetch";
 
 export default function HomePage() {
+  const [username, SetUsername] = useState("");
+
+
+  async function CreateLobby() {
+    const response = await fetchJson("api/sessions",
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          UserName: username
+        })
+      }
+    );
+    localStorage.setItem("playerID", response.player.id);
+  }
+
   return <div
     className="
     flex flex-col items-center
@@ -23,6 +41,7 @@ export default function HomePage() {
         Användarnamn: </label>
       <input
         id="username_input"
+        onChange={(e) => SetUsername(e.target.value)}
         type="text"
         placeholder=""
         className="
@@ -83,8 +102,8 @@ export default function HomePage() {
         border-2 border-solid border-stone-500 rounded
         " />
     </div>
-    <Link className="border-4 hover:bg-green-800 button border-stone-700 px-2 flex flex-col justify-center bg-green-700 h-10 rounded" to="/lobby">
-      Skapa Session
+    <Link onClick={CreateLobby} className="border-4 hover:bg-green-800 button border-stone-700 px-2 flex flex-col justify-center bg-green-700 h-10 rounded" to="/lobby">
+      Create Session
     </Link>
   </div>;
 }
