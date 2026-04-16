@@ -5,14 +5,14 @@ import type Player from "../interfaces/Player";
 export default function HomePage() {
   const navigate = useNavigate();
   const [username, SetUsername] = useState("");
-
+  const [url, SetUrl] = useState("");
 
   async function CreateLobby() {
     const response = await fetchJson<
       {
         url: string,
         player: Player;
-      }>("api/sessions", {
+      }>("/api/sessions", {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -23,97 +23,106 @@ export default function HomePage() {
 
     navigate(`lobby/${response.url}`);
   }
+  async function JoinLobby() {
+    console.log(username);
+    const response = await fetchJson<Player>
+      (`/api/sessions/${url}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          username: username
+        })
+      });
+    console.log(response);
+    localStorage.setItem("playerID", response.id);
+    navigate(`/lobby/${url}`);
+  }
 
   return <div
     className="
     flex flex-col items-center
     bg-gray-600 border-2 border-solid rounded-2xl
-    mx-5 p-10">
+    mx-5 w-75 p-2">
     <div className="
-          flex flex-col
-          w-fit
-          p-2">
+            flex flex-col
+            w-full
+            px-2 py-5 mb-5
+            items-center
+            bg-linear-to-r from-white/60">
       <label
         htmlFor="username_input"
         className="
-        py-0.5
-        text-2xl text-amber-200/50
-        bg-stone-700
-        text-shadow-md text-shadow-stone-800
-        rounded-t-2xl
-        text-center 
-        ">
+          px-2
+          text-2xl text-amber-200/50
+          bg-stone-700
+          text-shadow-md text-shadow-stone-800
+          rounded-t-2xl
+          text-center
+          ">
         Användarnamn: </label>
       <input
         id="username_input"
         onChange={(e) => SetUsername(e.target.value)}
         type="text"
-        placeholder=""
+        placeholder="xXPenguinKillerXx"
+        required
         className="
-        text-center
-        h-10 w-fit
-        bg-stone-400
-        border-2 border-solid border-stone-500 rounded
-        " />
+          text-center
+          h-10 w-fit
+          bg-stone-400
+          border-2 border-solid border-stone-500 rounded
+          " />
     </div>
-    <div className="
-          flex flex-col
-          w-fit
-          p-2">
-      <label
-        htmlFor="player-count-input"
+    <section
+      id="create"
+      className="mt-10 w-full flex flex-col items-center bg-linear-to-b from-white/60">
+      <button onClick={CreateLobby}
         className="
-        py-0.5
-        text-2xl text-amber-200/50
-        bg-stone-700
-        text-shadow-md text-shadow-stone-800
-        rounded-t-2xl
-        text-center 
-        ">
-        Antal spelare: </label>
-      <input
-        id="player-count-input"
-        type="text"
-        placeholder="2"
+        border-4 border-stone-700 rounded
+        hover:bg-green-800 button bg-green-700
+        px-2 h-10 my-5
+        flex flex-col justify-center">
+        Create Session
+      </button>
+    </section>
+    <section
+      id="join"
+      className="mt-10 w-full flex flex-col items-center bg-linear-to-b from-white/60">
+      <div className="
+            flex flex-col
+            w-fit
+            p-2">
+        <label
+          htmlFor="username_input"
+          className="
+          py-0.5
+          text-2xl text-amber-200/50
+          bg-stone-700
+          text-shadow-md text-shadow-stone-800
+          rounded-t-2xl
+          text-center 
+          ">
+          Lobby ID: </label>
+        <input
+          id="username_input"
+          onChange={(e) => SetUrl(e.target.value)}
+          type="text"
+          placeholder="XXXXXXXX"
+          className="
+          text-center
+          h-10 w-fit
+          bg-stone-400
+          border-2 border-solid border-stone-500 rounded
+          " />
+      </div>
+      <button onClick={JoinLobby}
         className="
-        text-center
-        h-10 w-fit
-        bg-stone-400
-        border-2 border-solid border-stone-500 rounded
-        " />
-    </div>
-    <div className="
-          flex flex-col
-          w-fit
-          p-2">
-      <label
-        htmlFor="board-size-input"
-        className="
-        py-0.5
-        text-2xl text-amber-200/50
-        text-shadow-md text-shadow-stone-800
-        bg-stone-700
-        rounded-t-2xl
-        text-center ">
-        Brädets storlek: </label>
-      <input
-        id="board-size-input"
-        type="text"
-        placeholder="10x10"
-        className="
-        text-center
-        h-10 w-fit
-        bg-stone-400
-        border-2 border-solid border-stone-500 rounded
-        " />
-    </div>
-    <button onClick={CreateLobby}
-      className="
-      border-4 border-stone-700 rounded
-      hover:bg-green-800 button bg-green-700
-      px-2 h-10
-      flex flex-col justify-center">
-      Create Session
-    </button>
+        border-4 border-stone-700 rounded
+        hover:bg-green-800 button bg-green-700
+        px-2 h-10
+        flex flex-col justify-center">
+        Join Session
+      </button>
+    </section>
   </div>;
 }
