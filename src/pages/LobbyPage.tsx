@@ -22,7 +22,9 @@ export default function LobbyPage() {
   useEffect(() => {
     if (!id) return;
     LoadSession();
-  }, []);
+    const interval = setInterval(LoadSession, 1000);
+    return () => clearInterval(interval);
+  }, [id]);
   async function ToggleReady() {
     await fetch(`/api/players/?url=${id}&id=${localStorage.getItem("playerID")}`,
       {
