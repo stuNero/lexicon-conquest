@@ -1,22 +1,27 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import fetchJson from "../utils/useFetch";
-
+import type Player from "../interfaces/Player";
 export default function HomePage() {
+  const navigate = useNavigate();
   const [username, SetUsername] = useState("");
 
 
   async function CreateLobby() {
-    const response = await fetchJson("api/sessions",
+    const response = await fetchJson<
       {
+        url: string,
+        player: Player;
+      }>("api/sessions", {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           UserName: username
         })
-      }
-    );
+      });
     localStorage.setItem("playerID", response.player.id);
+
+    navigate(`lobby/${response.url}`);
   }
 
   return <div
@@ -102,8 +107,13 @@ export default function HomePage() {
         border-2 border-solid border-stone-500 rounded
         " />
     </div>
-    <Link onClick={CreateLobby} className="border-4 hover:bg-green-800 button border-stone-700 px-2 flex flex-col justify-center bg-green-700 h-10 rounded" to="/lobby">
+    <button onClick={CreateLobby}
+      className="
+      border-4 border-stone-700 rounded
+      hover:bg-green-800 button bg-green-700
+      px-2 h-10
+      flex flex-col justify-center">
       Create Session
-    </Link>
+    </button>
   </div>;
 }

@@ -17,7 +17,7 @@ export default function Main() {
     max-w-7xl">
       <Routes>
         <Route path="/" element={<HomePage />} />
-        <Route path="/lobby" element={<LobbyPage />} />
+        <Route path="/lobby/:id" element={<LobbyPage />} />
         <Route path="/game" element={<GamePage />} />
       </Routes>
     </div>
