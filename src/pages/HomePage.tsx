@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
-import fetchJson from "../utils/useFetch";
+import fetchJson from "../utils/fetchJson";
 import type Player from "../interfaces/Player";
 export default function HomePage() {
   const navigate = useNavigate();
