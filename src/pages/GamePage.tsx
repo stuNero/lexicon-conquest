@@ -9,7 +9,6 @@ function RandomInt(max: number) {
 export default function GamePage() {
   const images = [forest, quarry, lake];
   const [board] = [{ rows: 10, cols: 10 }];
-  console.log(words);
 
   return <div style={{
     display: "grid",

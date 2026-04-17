@@ -24,7 +24,6 @@ export default function HomePage() {
     navigate(`lobby/${response.url}`);
   }
   async function JoinLobby() {
-    console.log(username);
     const response = await fetchJson<Player>
       (`/api/sessions/${url}`, {
         method: 'POST',
@@ -33,7 +32,6 @@ export default function HomePage() {
           username: username
         })
       });
-    console.log(response);
     localStorage.setItem("playerID", response.id);
     navigate(`/lobby/${url}`);
   }
