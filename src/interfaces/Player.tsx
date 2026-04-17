@@ -1,5 +1,6 @@
 export default interface Player {
   id: string,
   userName: string,
-  ready: boolean;
+  ready: boolean,
+  isHost: boolean;
 };

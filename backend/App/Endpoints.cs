@@ -37,7 +37,7 @@ public static class Endpoints
       };
 
       // add creator as first player
-      var newPlayer = new Player(userName: request.userName, ready: false);
+      var newPlayer = new Player(userName: request.userName, ready: false, isHost: true);
       session.players.Add(newPlayer);
       server.gameSessions.Add(session);
 
@@ -75,7 +75,7 @@ public static class Endpoints
         ));
     });
   }
-  public record NewPlayer(string userName, bool ready = false);
+  public record NewPlayer(string userName, bool IsHost, bool ready = false);
   public static void CreatePlayer(WebApplication app)
   {
     app.MapPost("/api/sessions/{url}",
@@ -102,8 +102,9 @@ public static class Endpoints
       Player newPlayer = new Player
       (
         userName: createP.userName,
-        ready: createP.ready
-      );
+        ready: createP.ready,
+        isHost: false
+        );
 
       session.players.Add(newPlayer);
 
