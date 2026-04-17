@@ -1,38 +1,60 @@
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { Check, X } from 'lucide-react';
 import { useEffect, useState } from "react";
-import fetchJson from "../utils/fetchJson";
 import type GameSession from "../interfaces/GameSession";
 import type Player from "../interfaces/Player";
+import * as signalR from "@microsoft/signalr";
 
 export default function LobbyPage() {
+  const navigate = useNavigate();
   const { id } = useParams();
   const [session, setSession] = useState<GameSession | null>(null);
   const [player, setPlayer] = useState<Player>();
 
-  function LoadSession() {
-    const loadSession = async () => {
-      const data = await fetchJson<GameSession[]>(`/api/sessions?url=${id}`);
-
-      setSession(data[0]);
-      setPlayer(data[0].players.find((p) => p.id == localStorage.getItem("playerID")));
-    };
-    loadSession();
-  }
-  useEffect(() => {
-    if (!id) return;
-    LoadSession();
-    const interval = setInterval(LoadSession, 1000);
-    return () => clearInterval(interval);
-  }, [id]);
   async function ToggleReady() {
-    await fetch(`/api/players/?url=${id}&id=${localStorage.getItem("playerID")}`,
+    await fetch(`/api/players?url=${id}&id=${localStorage.getItem("playerID")}`,
       {
         method: "PUT"
       });
-
-    LoadSession();
   }
+
+  useEffect(() => {
+    if (localStorage.getItem("playerID") == null) {
+      navigate("*");
+      return;
+    }
+    const connection = new signalR.HubConnectionBuilder()
+      .withUrl("/gamehub")
+      .withAutomaticReconnect()
+      .build();
+
+    let isMounted = true;
+    const start = async () => {
+      try {
+        await connection.start();
+
+        if (!isMounted) return;
+
+        await connection.invoke("JoinSession", id);
+      } catch (err) {
+      }
+    };
+
+    start();
+
+    connection.on("SessionUpdated", (session: GameSession) => {
+      setSession(session);
+      const currentPlayer = session.players
+        .find(p => p.id === localStorage.getItem("playerID"));
+
+      setPlayer(currentPlayer);
+    });
+
+    return () => {
+      isMounted = false;
+      void connection.stop();
+    };
+  }, [id]);
 
   return <div className="
     px-10 py-5
@@ -42,7 +64,7 @@ export default function LobbyPage() {
     <div className="mt-5 bg-stone-500 rounded-r-2xl mb-10 p-3">
       {session?.players.map((player) => (
         <div
-          key={session.id}
+          key={player.id}
           className="flex flex-row pr-2 mb-1 bg-stone-600 bg-linear-to-l from-stone-500">
           {player.ready ?
             <button className="text-green-700"> <Check /> </button>
