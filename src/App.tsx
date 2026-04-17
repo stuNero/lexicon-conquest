@@ -4,7 +4,7 @@ import Main from "./partials/Main";
 function App() {
   return (
     <BrowserRouter>
-      <Header />
+      {/* <Header /> */}
       <Main />
     </BrowserRouter>
   );
