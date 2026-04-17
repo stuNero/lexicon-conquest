@@ -4,27 +4,22 @@ using backend;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddCors();
-
+builder.Services.AddSingleton<GameServer>();
+builder.Services.AddSignalR();
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(option =>
 {
     option.Cookie.HttpOnly = true;
     option.Cookie.IsEssential = true;
-}
-);
+});
 
 var app = builder.Build();
+app.MapHub<GameHub>("/gamehub");
 app.UseSession();
 
-app.UseCors(policy =>
-    policy.AllowAnyOrigin()
-          .AllowAnyMethod()
-          .AllowAnyHeader());
-
-GameServer Server = new GameServer();
-Endpoints.GetSessions(app, Server);
-Endpoints.CreatePlayer(app, Server);
-Endpoints.DeleteSession(app, Server);
-Endpoints.ToggleReady(app, Server);
-Endpoints.CreateSession(app, Server);
+Endpoints.GetSessions(app);
+Endpoints.CreatePlayer(app);
+Endpoints.DeleteSession(app);
+Endpoints.ToggleReady(app);
+Endpoints.CreateSession(app);
 app.Run();
