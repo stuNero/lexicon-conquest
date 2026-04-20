@@ -69,6 +69,7 @@ public static class GameEndpoints
       if (currentPlayer.id != request.playerId)
         return Results.BadRequest(new { message = "It is not this player's turn" });
 
+      // Find the clicked tile
       var tile = session.Board.Tiles.FirstOrDefault(t =>
         t.X == request.x &&
         t.Y == request.y
@@ -80,10 +81,12 @@ public static class GameEndpoints
       if (tile.ControlledByPlayerId == request.playerId)
         return Results.BadRequest(new { message = "You already control this tile" });
 
+      //  Claim / steal the tile
       tile.ControlledByPlayerId = request.playerId;
 
       session.NextTurn();
 
+      // Return updated board and new currentPlayerId (next turn initiated)
       return Results.Ok(new
       {
         session.Url,
