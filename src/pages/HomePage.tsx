@@ -7,6 +7,7 @@ import {   Sword,
   Zap,
   Trophy, } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import fetchJson from '../utils/fetchjson';
 
 
 export default function HomePage() {
@@ -36,27 +37,55 @@ export default function HomePage() {
  
   };
 
-  const create = async (e: React.FormEvent<HTMLFormElement>) => {
+
+  
+  const CreateLobby = async (e: React.FormEvent<HTMLFormElement>) => {
     // this line is to prevent the page to refresh, we only want render the component not the whole page
     e.preventDefault();
 
 
-    navigate("/lobby");
+     const response = await fetchJson<
+      {
+        url: string,
+        player: Player,
+      }>("/api/sessions", {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userName: userName
+        })
+      });
+    localStorage.setItem("sessionID", response.url);
+    localStorage.setItem("playerID", response.player.id);
+
+    navigate(`lobby/${response.url}`);
     
   }
 
-  const join = async (e: React.FormEvent<HTMLFormElement>) => {
+
+
+  
+  const JoinLobby = async (e: React.FormEvent<HTMLFormElement>) => {
     // this line is to prevent the page to refresh, we only want render the component not the whole page
     e.preventDefault();
 
-
-    navigate("/gamepage")
+ const response = await fetchJson<Player>
+      (`/api/sessions/${url}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userName: userName
+        })
+      });
+    localStorage.setItem("sessionID", url);
+    localStorage.setItem("playerID", response.id);
+    navigate(`/lobby/${url}`);
     
   }
 
   return <>
     {/* div for centring the whole page */}
-    <div className="min-h-screen relative flex items-center justify-center      overflow-hidden  "> 
+    <div className="min-h-screen relative flex items-center justify-center      overflow-hidden py-6 "> 
       
       <div className="absolute inset-0 z-0">
         <img
@@ -141,7 +170,7 @@ export default function HomePage() {
         <div>
 
           {/* buttons that switch between create lobby and join lobby */}
-          <div className="flex-1 w-full bg-zinc-950 border border-white/10 rounded-3xl p-4 sm:p-6 md:p-8 mb-2 ">
+          <div className="flex-1 w-full lg:min-w-md md:min-w-md bg-zinc-950 border border-white/10 rounded-3xl p-4 sm:p-6 md:p-8 mb-2 ">
             <section className=" flex flex-row bg-black rounded-xl justify-between mb-8">
            {/* create lobby button  */}
                <button
@@ -167,7 +196,7 @@ export default function HomePage() {
           </section>
 
               
-          <form onSubmit={activeBtn === 'join' ? join : create}
+          <form onSubmit={activeBtn === 'join' ? JoinLobby : CreateLobby}
                 className="space-y-4 ">
                 {/* if active button is join */}
                 {activeBtn === 'join' && (
@@ -179,10 +208,10 @@ export default function HomePage() {
                       <input
                         type="text"
                         required
-                        placeholder="ch3vsd52"
+                        placeholder="XXXXXXXX"
                         className="flex-1 bg-transparent px-3 py-3 outline-none text-white"
-                        value={userName}
-                        onChange={(e) => setUserName(e.target.value.trim())}
+                        value={url}
+                        onChange={(e) => setUrl(e.target.value.trim())}
                       />
                     </div>
                  </div>
@@ -229,7 +258,7 @@ export default function HomePage() {
                     <div className="mt-1 flex items-center bg-black border border-white/10 rounded-xl px-3 focus-within:outline-1 focus-within:outline-green-800 ">
                       <input
                         type="number"
-                        placeholder="5"
+                        placeholder="10"
                         min="2"
                         className="flex-1 bg-transparent px-3 py-3 outline-none text-white"
                         value={boardSize}
