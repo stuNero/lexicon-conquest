@@ -76,6 +76,8 @@ export default function LobbyPage() {
 
   }, [id]);
 
+  const myId = localStorage.getItem("playerID");
+
   return (<div className="flex flex-col items-center gap-6 bg-slate-900/95 border border-emerald-500/30 rounded-2xl px-8 py-8 mx-5 max-w-lg w-full shadow-2xl shadow-black/50">
     {/* Title */}
     <div className="flex items-center gap-3">
@@ -108,33 +110,60 @@ export default function LobbyPage() {
     <h2 className="text-lg font-bold text-white self-start">Players</h2>
 
     {/* Loop through all players in sesh */}
-    {session?.players.map((player) => (
-      // Check on current player ternary
-      player.id === currentPlayer!.id ?
-        <div
-          key={player.id}
-          className="flex flex-row pr-2 mb-1 bg-stone-600 bg-linear-to-l from-stone-500 animate-bounce">
-          {player.ready ?
-            <button onClick={ToggleReady} className="text-green-700 hover:scale-120 animate-pulse "> <Check /> </button>
-            :
-            <button onClick={ToggleReady} className="text-red-700 animate-pulse hover:scale-110"> <X /> </button>
-          }
-          <p>{player.userName}</p>
-        </div>
-        :     // TERNARY MIDDLE POINT
-        <div
-          key={player.id}
-          className="flex flex-row pr-2 mb-1 bg-stone-600 bg-linear-to-l from-stone-500">
-          {
-            player.ready ?
-              <button className="text-green-700"> <Check /> </button>
-              :
-              <button className="text-red-700"> <X /> </button>
-          }
-          <p>{player.userName}</p>
-        </div>
-      // TERNARY END
-    ))}
+    <div className="flex flex-col gap-3 w-full">
+      {session?.players.map((player, index) => {
+        const isMe = player.id === myId;
+        return (
+          <div
+            key={player.id}
+            className={`
+                flex items-center gap-4 px-5 py-4
+                bg-slate-800/80 rounded-xl
+                border ${isMe ? "border-slate-500" : playerBorders[index % 4]}
+                ${isMe ? "shadow-[0_0_15px_rgba(100,116,139,0.15)]" : ""}
+                transition-all
+              `}
+          >
+            <div className={`w-10 h-10 rounded-full ${playerColors[index % 4]} shrink-0`} />
+
+            <div className="flex flex-col flex-1">
+              <span className="text-white font-semibold">{player.userName}</span>
+              <div className="flex gap-2">
+                {player.isHost && <span className="text-slate-400 text-xs">Host</span>}
+                {isMe && <span className="text-emerald-400 text-xs font-semibold">You</span>}
+              </div>
+            </div>
+
+            {isMe ? (
+              <button
+                onClick={ToggleReady}
+                className={`
+                    flex items-center gap-1 text-sm font-semibold
+                    px-3 py-1 rounded-lg
+                    transition-all hover:scale-105
+                    ${player.ready
+                    ? "text-emerald-400 hover:bg-emerald-500/10"
+                    : "text-red-400 hover:bg-red-500/10"
+                  }
+                  `}
+              >
+                {player.ready
+                  ? <><Check className="w-4 h-4" /> Ready</>
+                  : <><X className="w-4 h-4" /> Not Ready</>
+                }
+              </button>
+            ) : (
+              <span className={`flex items-center gap-1 text-sm font-semibold ${player.ready ? "text-emerald-400" : "text-red-400"}`}>
+                {player.ready
+                  ? <><Check className="w-4 h-4" /> Ready</>
+                  : <><X className="w-4 h-4" /> Not Ready</>
+                }
+              </span>
+            )}
+          </div>
+        );
+      })}
+    </div>
     {
       currentPlayer?.isHost ?
         session?.players.every(player => player.ready == true) ?
