@@ -1,10 +1,24 @@
 import { useNavigate, useParams } from "react-router-dom";
-import { Check, X } from 'lucide-react';
+import { Check, X, Users, Copy } from 'lucide-react';
 import { useEffect, useState } from "react";
 import { useSignalR } from "../utils/SignalRContext";
 import * as signalR from "@microsoft/signalr";
 import type GameSession from "../interfaces/GameSession";
 import type Player from "../interfaces/Player";
+
+const playerColors = [
+  "bg-red-500",
+  "bg-blue-500",
+  "bg-emerald-500",
+  "bg-amber-500",
+];
+
+const playerBorders = [
+  "border-red-500/50",
+  "border-blue-500/50",
+  "border-emerald-500/50",
+  "border-amber-500/50",
+];
 
 export default function LobbyPage() {
   const navigate = useNavigate();
@@ -12,6 +26,7 @@ export default function LobbyPage() {
   const { id } = useParams(); // Session id from page url slug
   const [session, setSession] = useState<GameSession | null>(null); // Saving current session
   const [currentPlayer, setCurrentPlayer] = useState<Player>(); // Save current player
+  const [copied, setCopied] = useState(false); // State för copy-knappen
 
   async function ToggleReady() {
     await fetch(`/api/players?url=${id}&id=${localStorage.getItem("playerID")}`,
@@ -23,6 +38,13 @@ export default function LobbyPage() {
       method: "POST",
       headers: { 'Content-Type': 'application/json' }
     });
+  }
+  function copyLobbyCode() {
+    if (id) {
+      navigator.clipboard.writeText(id);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
   }
 
   useEffect(() => {
