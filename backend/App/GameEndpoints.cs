@@ -2,6 +2,7 @@ namespace backend;
 
 using backend.Gamecomponents;
 using backend.App.GameServices;
+// using Microsoft.AspNetCore.SignalR; this lets the file use SignalR’s IHubContext. Needed later
 
 public record StartGameRequest(int boardSize);
 public record ClaimTileRequest(Guid playerId, int x, int y);
@@ -12,6 +13,15 @@ public static class GameEndpoints
   {
     app.MapPost("/api/sessions/{url}/start",
     (string url, StartGameRequest request) =>
+    /*
+    This is how the singnalR should look like later
+    app.MapPost("/api/sessions/{url}/start",
+    async (
+      string url,
+      StartGameRequest request,
+      IHubContext<GameHub> hubContext
+    ) =>
+    */
     {
       var session = server.gameSessions.FirstOrDefault(s => s.Url == url);
 
@@ -31,7 +41,23 @@ public static class GameEndpoints
         return Results.BadRequest(new { message = "Board size must be between 2 and 25" });
 
       session.StartGame(request.boardSize, wordService);
+      /* Och här skickar signalR sin egna respons
+      var response = new
+            {
+              session.Url,
+              session.InGame,
+              session.CurrentPlayerIndex,
+              session.TurnNumber,
+              currentPlayerId = session.CurrentPlayer()?.id,
+              players = session.players,
+              board = BoardMapper.ToDto(session.Board!)
+            };
 
+            await hubContext.Clients.Group(url).SendAsync("SessionUpdated", response);
+
+            return Results.Ok(response);
+          });
+      */
       return Results.Ok(new
       {
         session.Url,
