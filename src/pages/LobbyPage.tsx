@@ -98,7 +98,7 @@ export default function LobbyPage() {
               flex flex-col justify-center p-1
               "
             type="button"
-            onClick={(e) => StartGame()}
+            onClick={() => StartGame()}
           >
             Starta Spel
           </button>
