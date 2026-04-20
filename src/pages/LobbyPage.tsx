@@ -76,11 +76,7 @@ export default function LobbyPage() {
 
   }, [id]);
 
-  return <div className="
-    px-10 py-5
-    flex flex-col items-center
-    bg-gray-600 border-2 border-solid rounded-2xl
-    mx-5 ">
+  return (<div className=" flex flex-col items-center gap-6 bg-slate-900 /95 border border - emerald - 500 / 30 rounded - 2xl px - 8 py - 8 mx - 5 max - w - lg w - full shadow - 2xl shadow - black / 50">
     <div className="mt-5 bg-stone-500 rounded-r-2xl mb-10 p-3">
       {/* Loop through all players in sesh */}
       {session?.players.map((player) => (
@@ -147,5 +143,5 @@ export default function LobbyPage() {
         </button>
 
     }
-  </div>;
+  </div>);
 };
