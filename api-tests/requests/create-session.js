@@ -26,4 +26,5 @@ export function postResponse() {
   });
 
   pm.collectionVariables.set('sessionUrl', json.url);
+  pm.collectionVariables.set('hostPlayerId', json.player.id);
 }
