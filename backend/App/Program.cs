@@ -14,6 +14,12 @@ builder.Services.AddSession(option =>
 
 var app = builder.Build();
 app.MapHub<GameHub>("/gamehub");
+
+// this two use makes the program to go through wwwroot folder to get the 
+// frontend when we start backend.
+app.UseDefaultFiles(); 
+app.UseStaticFiles();
+
 app.UseSession();
 
 Endpoints.GetSessions(app);

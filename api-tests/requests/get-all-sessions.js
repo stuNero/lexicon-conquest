@@ -13,7 +13,7 @@ export function postResponse() {
   pm.test('Response is an array', () => {
     pm.expect(json).to.be.an('array');
   });
-
+  
   pm.test('Each session has url and players properties', () => {
     if (json.length > 0) {
       json.forEach(session => {
