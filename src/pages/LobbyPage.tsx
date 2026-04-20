@@ -38,6 +38,7 @@ export default function LobbyPage() {
       setSession(session);
       const currentPlayer = session.players.find(p => p.id === localStorage.getItem("playerID"));
       setCurrentPlayer(currentPlayer);
+      localStorage.setItem("userName", currentPlayer?.userName!);
       if (session.inGame) navigate(`/game/${id}`);
     };
 
@@ -46,7 +47,9 @@ export default function LobbyPage() {
 
     return () => {
       connection.off("SessionUpdated", handleSessionUpdated);
-      connection.invoke("LeaveSession", handleSessionUpdated);
+      if (connection.state === signalR.HubConnectionState.Connected) {
+        connection.invoke("LeaveSession", id).catch(console.error);
+      }
     };
 
   }, [id]);
