@@ -22,7 +22,7 @@ public static class Endpoints
 
       session.InGame = true;
       await hubContext.Clients.Group(url).SendAsync("SessionUpdated", session);
-      return Results.Ok();
+      return Results.Ok(session);
     });
   }
   // new session endpoint
