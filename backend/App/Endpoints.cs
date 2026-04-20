@@ -1,6 +1,9 @@
 namespace backend;
 
+using backend.Gamecomponents;
+using backend.App.GameServices;
 
+public record StartGameRequest(int boardSize);
 public static class Endpoints
 {
 
@@ -145,6 +148,30 @@ public static class Endpoints
         }
       }
       return Results.NotFound(new { message = $"Session with url: {url} could not be found" });
+    });
+  }
+
+  public static void StartGame(WebApplication app, GameServer server, WordService wordService)
+  {
+    app.MapPost("/api/sessions/{url}/start",
+    (string url, StartGameRequest request) =>
+    {
+      Console.WriteLine("START ENDPOINT HIT");
+      var session = server.gameSessions.FirstOrDefault(s => s.Url == url);
+
+      if (session == null)
+        return Results.NotFound();
+
+      var boardSize = request.boardSize;
+
+      session.Board = new Board(boardSize, boardSize, wordService, "common_words");
+
+      return Results.Ok(new
+      {
+        session.Url,
+        players = session.players,
+        board = BoardMapper.ToDto(session.Board)
+      });
     });
   }
 }

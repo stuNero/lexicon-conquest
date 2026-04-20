@@ -1,6 +1,8 @@
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using backend;
+using backend.App.GameServices;
+using backend.Gamecomponents;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddCors();
@@ -22,9 +24,12 @@ app.UseCors(policy =>
           .AllowAnyHeader());
 
 GameServer Server = new GameServer();
+var wordService = new WordService();
+
 Endpoints.GetSessions(app, Server);
 Endpoints.CreatePlayer(app, Server);
 Endpoints.DeleteSession(app, Server);
 Endpoints.ToggleReady(app, Server);
 Endpoints.CreateSession(app, Server);
+Endpoints.StartGame(app, Server, wordService);
 app.Run();
