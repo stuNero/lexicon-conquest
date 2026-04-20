@@ -19,6 +19,7 @@ export default function HomePage() {
           UserName: username
         })
       });
+    localStorage.setItem("sessionID", response.url);
     localStorage.setItem("playerID", response.player.id);
 
     navigate(`lobby/${response.url}`);
@@ -32,6 +33,7 @@ export default function HomePage() {
           username: username
         })
       });
+    localStorage.setItem("sessionID", url);
     localStorage.setItem("playerID", response.id);
     navigate(`/lobby/${url}`);
   }
