@@ -3,7 +3,6 @@ using System.Text.Json.Nodes;
 using backend;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddCors();
 builder.Services.AddSingleton<GameServer>();
 builder.Services.AddSignalR();
 builder.Services.AddDistributedMemoryCache();
@@ -22,4 +21,5 @@ Endpoints.CreatePlayer(app);
 Endpoints.DeleteSession(app);
 Endpoints.ToggleReady(app);
 Endpoints.CreateSession(app);
+Endpoints.StartGame(app);
 app.Run();

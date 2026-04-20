@@ -5,7 +5,26 @@ namespace backend;
 
 public static class Endpoints
 {
+  public static void StartGame(WebApplication app)
+  {
+    app.MapPost("/api/sessions/start/{url}", async (
+      string url,
+      GameServer server,
+      IHubContext<GameHub> hubContext
+    ) =>
+    {
+      var session = server.gameSessions.FirstOrDefault((s) => s.Url == url);
 
+      if (session == null)
+        return Results.NotFound(new { message = $"Session: [{url}] doesn't exist" });
+      if (!session.players.All((p) => p.Ready))
+        return Results.BadRequest(new { message = "Not all players are ready" });
+
+      session.InGame = true;
+      await hubContext.Clients.Group(url).SendAsync("SessionUpdated", session);
+      return Results.Ok();
+    });
+  }
   // new session endpoint
   public record CreateSessionRequest(string userName);
   public record NewSession(string url);
@@ -52,7 +71,7 @@ public static class Endpoints
 
   // get all session
   // get session by id can be accessed via url query 
-  public record sessionObject(string Url, Player[] players);
+  public record sessionObject(string Url, Player[] players, bool inGame);
   public static void GetSessions(WebApplication app)
   {
     app.MapGet("/api/sessions", async (GameServer server, string? url, IHubContext<GameHub> hubContext) =>
@@ -64,14 +83,16 @@ public static class Endpoints
         .Where(s => s.Url == url)
         .Select(s => new sessionObject(
           s.Url,
-          s.players.ToArray()
+          s.players.ToArray(),
+          s.InGame
           )));
       }
       // For generic search
       return server.gameSessions
       .Select(s => new sessionObject(
         s.Url,
-        s.players.ToArray()
+        s.players.ToArray(),
+        s.InGame
         ));
     });
   }
