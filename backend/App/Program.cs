@@ -19,7 +19,7 @@ var app = builder.Build();
 
 // this two use makes the program to go through wwwroot folder to get the 
 // frontend when we start backend.
-app.UseDefaultFiles(); 
+app.UseDefaultFiles();
 app.UseStaticFiles();
 
 app.UseSession();
@@ -37,5 +37,8 @@ Endpoints.CreatePlayer(app, Server);
 Endpoints.DeleteSession(app, Server);
 Endpoints.ToggleReady(app, Server);
 Endpoints.CreateSession(app, Server);
-Endpoints.StartGame(app, Server, wordService);
+GameEndpoints.StartGame(app, Server, wordService);
+GameEndpoints.ClaimTile(app, Server);
+
+
 app.Run();
