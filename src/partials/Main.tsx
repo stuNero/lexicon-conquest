@@ -18,7 +18,7 @@ export default function Main() {
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/lobby/:id" element={<LobbyPage />} />
-        <Route path="/game" element={<GamePage />} />
+        <Route path="/game/:id" element={<GamePage />} />
       </Routes>
     </div>
   </main>;
