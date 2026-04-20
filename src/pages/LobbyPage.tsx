@@ -76,37 +76,65 @@ export default function LobbyPage() {
 
   }, [id]);
 
-  return (<div className=" flex flex-col items-center gap-6 bg-slate-900 /95 border border - emerald - 500 / 30 rounded - 2xl px - 8 py - 8 mx - 5 max - w - lg w - full shadow - 2xl shadow - black / 50">
-    <div className="mt-5 bg-stone-500 rounded-r-2xl mb-10 p-3">
-      {/* Loop through all players in sesh */}
-      {session?.players.map((player) => (
-        // Check on current player ternary
-        player.id === currentPlayer!.id ?
-          <div
-            key={player.id}
-            className="flex flex-row pr-2 mb-1 bg-stone-600 bg-linear-to-l from-stone-500 animate-bounce">
-            {player.ready ?
-              <button onClick={ToggleReady} className="text-green-700 hover:scale-120 animate-pulse "> <Check /> </button>
-              :
-              <button onClick={ToggleReady} className="text-red-700 animate-pulse hover:scale-120"> <X /> </button>
-            }
-            <p>{player.userName}</p>
-          </div>
-          :     // TERNARY MIDDLE POINT
-          <div
-            key={player.id}
-            className="flex flex-row pr-2 mb-1 bg-stone-600 bg-linear-to-l from-stone-500">
-            {
-              player.ready ?
-                <button className="text-green-700"> <Check /> </button>
-                :
-                <button className="text-red-700"> <X /> </button>
-            }
-            <p>{player.userName}</p>
-          </div>
-        // TERNARY END
-      ))}
+  return (<div className="flex flex-col items-center gap-6 bg-slate-900/95 border border-emerald-500/30 rounded-2xl px-8 py-8 mx-5 max-w-lg w-full shadow-2xl shadow-black/50">
+    {/* Title */}
+    <div className="flex items-center gap-3">
+      <Users className="text-emerald-400 w-7 h-7" />
+      <h1 className="text-2xl font-bold text-white">Game Lobby</h1>
     </div>
+    {/* Lobby code */}
+    <div className="flex items-center gap-3">
+      <div className="bg-slate-800 border border-slate-600 rounded-full px-5 py-2 flex items-center gap-2">
+        <span className="text-slate-400 text-sm">Lobby Code:</span>
+        <span className="text-white font-mono font-bold tracking-wider">{id?.toUpperCase()}</span>
+      </div>
+      <button
+        onClick={copyLobbyCode}
+        className="flex items-center gap-1 bg-slate-800 border border-slate-600 rounded-full px-4 py-2 text-slate-300 text-sm hover:bg-slate-700 hover:text-white transition-all"
+      >
+        <Copy className="w-4 h-4" />
+        {copied ? "Copied!" : "Copy"}
+      </button>
+    </div>
+    {/* Player count */}
+    <p className="text-slate-400 text-sm">
+      Players: {session?.players.length ?? 0}/4
+    </p>
+
+    {/* Separator */}
+    <div className="h-px w-full bg-gradient-to-r from-transparent via-slate-600 to-transparent" />
+
+    {/* Players heading */}
+    <h2 className="text-lg font-bold text-white self-start">Players</h2>
+
+    {/* Loop through all players in sesh */}
+    {session?.players.map((player) => (
+      // Check on current player ternary
+      player.id === currentPlayer!.id ?
+        <div
+          key={player.id}
+          className="flex flex-row pr-2 mb-1 bg-stone-600 bg-linear-to-l from-stone-500 animate-bounce">
+          {player.ready ?
+            <button onClick={ToggleReady} className="text-green-700 hover:scale-120 animate-pulse "> <Check /> </button>
+            :
+            <button onClick={ToggleReady} className="text-red-700 animate-pulse hover:scale-110"> <X /> </button>
+          }
+          <p>{player.userName}</p>
+        </div>
+        :     // TERNARY MIDDLE POINT
+        <div
+          key={player.id}
+          className="flex flex-row pr-2 mb-1 bg-stone-600 bg-linear-to-l from-stone-500">
+          {
+            player.ready ?
+              <button className="text-green-700"> <Check /> </button>
+              :
+              <button className="text-red-700"> <X /> </button>
+          }
+          <p>{player.userName}</p>
+        </div>
+      // TERNARY END
+    ))}
     {
       currentPlayer?.isHost ?
         session?.players.every(player => player.ready == true) ?
@@ -143,5 +171,5 @@ export default function LobbyPage() {
         </button>
 
     }
-  </div>);
+  </div >);
 };
