@@ -1,64 +1,55 @@
-import { Link, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { Check, X } from 'lucide-react';
 import { useEffect, useState } from "react";
+import { useSignalR } from "../utils/SignalRContext";
+import * as signalR from "@microsoft/signalr";
 import type GameSession from "../interfaces/GameSession";
 import type Player from "../interfaces/Player";
-import * as signalR from "@microsoft/signalr";
 
 export default function LobbyPage() {
+  const navigate = useNavigate();
+  const connection = useSignalR();
   const { id } = useParams(); // Session id from page url slug
   const [session, setSession] = useState<GameSession | null>(null); // Saving current session
   const [currentPlayer, setCurrentPlayer] = useState<Player>(); // Save current player
 
   async function ToggleReady() {
     await fetch(`/api/players?url=${id}&id=${localStorage.getItem("playerID")}`,
-      {
-        method: "PUT"
-      });
+      { method: "PUT" }
+    );
+  }
+  async function StartGame() {
+    await fetch(`/api/sessions/start/${id}`, {
+      method: "POST",
+      headers: { 'Content-Type': 'application/json' }
+    });
   }
 
   useEffect(() => {
-    // building signalR connection
-    const connection = new signalR.HubConnectionBuilder()
-      .withUrl("/gamehub")
-      .withAutomaticReconnect()
-      .build();
-
-    let isMounted = true;
-    const start = async () => {
-      try {
-        await connection.start();
-
-        if (!isMounted) return;
-        // Making first "ping"
-        await connection.invoke("JoinSession", id);
-      } catch (err) {
-      }
+    if (connection.state === signalR.HubConnectionState.Connected) {
+      connection.invoke("JoinSession", id).catch(console.error);
+    }
+    else {
+      connection.onreconnected(() => {
+        connection.invoke("JoinSession", id).catch(console.error);
+      });
+    }
+    const handleSessionUpdated = (session: GameSession) => {
+      setSession(session);
+      const currentPlayer = session.players.find(p => p.id === localStorage.getItem("playerID"));
+      setCurrentPlayer(currentPlayer);
+      if (session.inGame) navigate(`/game/${id}`);
     };
 
-    // Starting connection
-    start();
-
-    connection.on("SessionUpdated", (session: GameSession) => {
-      // sets the session given from backend
-      setSession(session);
-
-      // Sets the local current player
-      const currentPlayer = session.players
-        .find(p => p.id === localStorage.getItem("playerID"));
-
-      setCurrentPlayer(currentPlayer);
-    });
+    connection.on("SessionUpdated", handleSessionUpdated);
+    connection.invoke("JoinSession", id).catch(console.error);
 
     return () => {
-      // Clean-up
-      isMounted = false;
-      // Disconnect signalr if you leave page
-      void connection.stop();
+      connection.off("SessionUpdated", handleSessionUpdated);
+      connection.invoke("LeaveSession", handleSessionUpdated);
     };
-  },
-    // Triggers when session url changes
-    [id]);
+
+  }, [id]);
 
   return <div className="
     px-10 py-5
@@ -95,25 +86,41 @@ export default function LobbyPage() {
         // TERNARY END
       ))}
     </div>
-    {session?.players.every(player => player.ready == true) ?
-      <Link
-        className="
+    {
+      currentPlayer?.isHost ?
+        session?.players.every(player => player.ready == true) ?
+          // if player is host and every player is ready
+          <button
+            className="
               border-2 border-stone-700 rounded
-            bg-green-700
+            bg-green-700 hover:scale-110
               button
               flex flex-col justify-center p-1
               "
-        to="/game">
-        Starta Spel
-      </Link>
-      :
-      <button className="
+            type="button"
+            onClick={(e) => StartGame()}
+          >
+            Starta Spel
+          </button>
+          :
+          // if player is host but every player isn't ready
+          <button className="
           border-2 border-stone-700 rounded
           bg-red-800
           button
           h-10 w-auto my-2 px-2">
-        Alla spelare ej redo
-      </button>
+            All Players Are Not Ready
+          </button>
+        :
+        // if player isn't host
+        <button className="
+          border-2 border-stone-500 rounded
+          bg-stone-600
+          button
+          h-10 w-auto my-2 px-2">
+          Waiting...
+        </button>
+
     }
   </div>;
 };
