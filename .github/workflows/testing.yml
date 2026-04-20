@@ -40,7 +40,7 @@ jobs:
     - name: Install playwright browsers
       run: npx playwright install
     
-    - name: build npm 
+    - name: build frontend with vite, creating wwwroot folder
       run: npm run build
 
     - name: Run dotnet server

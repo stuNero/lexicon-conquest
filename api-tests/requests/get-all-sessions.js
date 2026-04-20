@@ -1,6 +1,6 @@
 export default {
   method: 'GET',
-  url: '{{baseUrl}}/api/sessions'  
+  url: '{{baseUrl}}/api/sessions'
 };
 
 export function postResponse() {
@@ -14,5 +14,13 @@ export function postResponse() {
     pm.expect(json).to.be.an('array');
   });
   
- 
+  pm.test('Each session has url and players properties', () => {
+    if (json.length > 0) {
+      json.forEach(session => {
+        pm.expect(session).to.have.property('url');
+        pm.expect(session).to.have.property('players');
+        pm.expect(session.players).to.be.an('array');
+      });
+    }
+  });
 }
