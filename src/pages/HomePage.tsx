@@ -1,21 +1,21 @@
-import { act, useState } from 'react';
-import { Link } from "react-router-dom";
+import { useState, FormEvent } from 'react';
 import {   Sword,
   Users,
   Grid3x3,
-  Crown,
-  Zap,
   Trophy, } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import fetchJson from '../utils/fetchjson';
+import Player from '../interfaces/Player';
+
+
 
 
 export default function HomePage() {
   const navigate = useNavigate();
   const [activeBtn, setActiveBtn] = useState('join');
   const [userName, setUserName] = useState('');
-  const [playerAmount, setPlayerAmount] = useState('');
-  const [boardSize, setBoardSize] = useState('');
+  const [playerAmount, setPlayerAmount] = useState('2');
+  const [boardSize, setBoardSize] = useState('10');
   const [url, setUrl] = useState('');
 
 
@@ -32,44 +32,45 @@ export default function HomePage() {
 
   const switchToJoin = () => {
     setActiveBtn('join');
-    // Clear all fields when switiching to Join
+    // Clear field when switiching to Join
     setUrl('');
  
   };
 
 
   
-  const CreateLobby = async (e: React.FormEvent<HTMLFormElement>) => {
-    // this line is to prevent the page to refresh, we only want render the component not the whole page
-    e.preventDefault();
+   const CreateLobby = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault(); 
+    
 
-
-     const response = await fetchJson<
+     const response =await  fetchJson<
       {
         url: string,
-        player: Player,
+        players: Player,
       }>("/api/sessions", {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          userName: userName
+          userName: userName,
         })
-      });
+       });
+     
+     console.log("full response", response)
     localStorage.setItem("sessionID", response.url);
-    localStorage.setItem("playerID", response.player.id);
+    localStorage.setItem("playerID", response.players.id);
 
     navigate(`lobby/${response.url}`);
+    return;
     
   }
 
 
 
   
-  const JoinLobby = async (e: React.FormEvent<HTMLFormElement>) => {
-    // this line is to prevent the page to refresh, we only want render the component not the whole page
-    e.preventDefault();
+ const JoinLobby = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault(); // 
 
- const response = await fetchJson<Player>
+    const response = await fetchJson < Player >
       (`/api/sessions/${url}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -80,6 +81,7 @@ export default function HomePage() {
     localStorage.setItem("sessionID", url);
     localStorage.setItem("playerID", response.id);
     navigate(`/lobby/${url}`);
+    return;
     
   }
 
@@ -291,14 +293,6 @@ export default function HomePage() {
         </div>
          </div>
      </div>
-    
-
-
-
-
-
-
-
  
     </>
 }
