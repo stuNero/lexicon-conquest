@@ -4,14 +4,15 @@ using backend.App.GameServices;
 using backend.Gamecomponents;
 public class GameSession
 {
-  public string Url;
-  public List<Player> players;
+  public string Url { get; set; }
+  public List<Player> players { get; set; }
   public Board? Board { get; set; }
 
   //Nytt
   public bool InGame { get; set; } = false;
   public int CurrentPlayerIndex { get; set; } = 0;
   public int TurnNumber { get; set; } = 1;
+
 
 
 

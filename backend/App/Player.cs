@@ -7,9 +7,11 @@ public class Player
   public Guid id { get; set; } = Guid.NewGuid();
   public string UserName { get; set; }
   public bool Ready { get; set; }
-  public Player(string userName, bool ready)
+  public bool IsHost { get; set; }
+  public Player(string userName, bool ready, bool isHost)
   {
     UserName = userName;
     Ready = ready;
+    IsHost = isHost;
   }
 }

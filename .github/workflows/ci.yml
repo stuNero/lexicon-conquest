@@ -1,0 +1,207 @@
+name: Testing
+
+on: 
+    push: 
+        branches: ["main", "DEV"]
+    pull_request:
+        branches: ["main", "DEV"]
+
+jobs:
+  security:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Run Gitleaks
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Cache NuGet packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+
+      - name: Restore .NET dependencies
+        run: dotnet restore backend/App/App.csproj
+
+      - name: Scan .NET dependencies for vulnerabilities
+        run: |
+          dotnet list backend/App/App.csproj package --vulnerable --include-transitive > dotnet-vulnerabilities.txt
+          cat dotnet-vulnerabilities.txt
+          if grep -Eiq "(Critical|High)" dotnet-vulnerabilities.txt; then
+            echo "High/Critical vulnerabilities found in .NET dependencies."
+            exit 1
+          fi
+
+      - name: Build backend
+        run: dotnet build backend/App/App.csproj --no-restore
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: "npm"
+          cache-dependency-path: package-lock.json
+
+      - name: Install frontend/system test dependencies
+        run: npm ci
+
+      - name: Install newman
+        run: cd post-they && npm ci 
+
+      - name: Scan npm dependencies
+        run: npm audit --audit-level=high
+
+      - name: Build frontend
+        run: npm run build
+
+      - name: Publish backend
+        run: dotnet publish backend/App/App.csproj -c Release -o out --no-restore
+
+      - name: Upload publish artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-publish
+          path: out/
+
+      - name: Upload frontend artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-wwwroot
+          path: backend/App/wwwroot/
+
+      - name: Validate Docker build
+        run: docker build -t myapp:ci .
+
+      - name: Scan Docker image with Trivy (CRITICAL)
+        run: |
+          docker run --rm \
+            -v /var/run/docker.sock:/var/run/docker.sock \
+            aquasec/trivy:0.63.0 image \
+            --severity CRITICAL \
+            --ignore-unfixed \
+            --exit-code 1 \
+            myapp:ci
+
+  tests:
+    needs: [security, build]
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        suite: [unit, api, e2e]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download frontend artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: frontend-wwwroot
+          path: backend/App/wwwroot/
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Cache NuGet packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+
+      - name: Restore .NET dependencies
+        run: dotnet restore backend/App/App.csproj
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: "npm"
+          cache-dependency-path: package-lock.json
+
+      - name: Install npm dependencies
+        run: npm ci
+
+      - name: Install newman
+        run: cd post-they && npm ci
+
+      - name: Build frontend
+        run: npm run build 
+
+      - name: Install Playwright browsers
+        if: ${{ matrix.suite == 'e2e' }}
+        run: npx playwright install
+
+      - name: Run unit tests
+        if: ${{ matrix.suite == 'unit' }}
+        run: dotnet test backend/MyApp.slnx --logger "trx;LogFileName=unit-tests.trx" --results-directory TestResults
+
+      - name: Run API tests
+        if: ${{ matrix.suite == 'api' }}
+        run: |
+          npm run backend &
+          npx wait-on http://localhost:5001
+          echo "Server started"
+          npm run test:api
+
+      - name: Run E2E tests
+        if: ${{ matrix.suite == 'e2e' }}
+        run: |
+          npm run backend &
+          npx wait-on http://localhost:5001
+          echo "Server started"
+          npm run test:e2e
+
+      - name: Upload test artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results-${{ matrix.suite }}
+          path: |
+            TestResults/**
+            playwright-report/**
+            test-results/**
+          if-no-files-found: ignore
+
+  report:
+    needs: tests
+    if: always()
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download all test artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: test-results-*
+          path: artifacts/
+          merge-multiple: true
+
+      - name: Publish pipeline summary
+        run: |
+          echo "## CI Rapport" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Build-jobb: klart" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Testmatris: unit/api/e2e körda parallellt" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Nedladdade artefakter:" >> "$GITHUB_STEP_SUMMARY"
+          find artifacts -type f | sed 's/^/- /' >> "$GITHUB_STEP_SUMMARY"
