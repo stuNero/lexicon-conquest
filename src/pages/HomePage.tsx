@@ -34,6 +34,7 @@ export default function HomePage() {
     setActiveBtn('join');
     // Clear field when switiching to Join
     setUrl('');
+    setUserName('');
  
   };
 
@@ -41,12 +42,12 @@ export default function HomePage() {
   
    const CreateLobby = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault(); 
-    
+    console.log("entered function")
 
      const response =await  fetchJson<
       {
         url: string,
-        players: Player,
+        player: Player,
       }>("/api/sessions", {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -57,10 +58,10 @@ export default function HomePage() {
      
      console.log("full response", response)
     localStorage.setItem("sessionID", response.url);
-    localStorage.setItem("playerID", response.players.id);
+    localStorage.setItem("playerID", response.player.id);
 
-    navigate(`lobby/${response.url}`);
-    return;
+     navigate(`lobby/${response.url}`);
+     return;
     
   }
 
@@ -203,6 +204,22 @@ export default function HomePage() {
                 {/* if active button is join */}
                 {activeBtn === 'join' && (
                   <>
+                        {/* firstname */}
+                  <div>
+                    <label className="text-sm text-gray-400 after:content-['*'] after:ml-1 after:text-red-700">Name</label>
+                    <div className="mt-1 flex items-center bg-black border border-white/10 rounded-xl px-3 focus-within:outline-1 focus-within:outline-green-800 ">
+                      <input
+                        type="text"
+                        required
+                        placeholder="Username"
+                        className="flex-1 bg-transparent px-3 py-3 outline-none text-white"
+                        value={userName}
+                        onChange={(e) => setUserName(e.target.value.trim())}
+                      />
+                    </div>
+                    </div>
+                    
+
                    {/* url */}
                   <div>
                     <label className="text-sm text-gray-400 after:content-['*'] after:ml-1 after:text-red-700">Url</label>
