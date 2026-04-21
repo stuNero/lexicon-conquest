@@ -81,7 +81,32 @@ export default function LobbyPage() {
 
   const myId = localStorage.getItem("playerID");
 
-  return (<div className="flex flex-col items-center gap-4 sm:gap-6 bg-slate-900/95 border border-emerald-500/30 rounded-none sm:rounded-2xl px-4 sm:px-8 py-6 sm:py-8 mx-0 sm:mx-5 max-w-lg w-full shadow-2xl shadow-black/50">
+  const cardBase = `
+  flex items-center
+  gap-3 sm:gap-4
+  px-3 sm:px-5 py-3 sm:py-4
+  bg-slate-800/80 rounded-xl
+  transition-all border
+`;
+
+  const labelSmall = "text-xs uppercase tracking-widest font-semibold";
+
+  const buttonBase = `
+  w-full py-2.5 sm:py-3
+  text-sm sm:text-base font-bold
+  rounded-xl transition-all
+`;
+
+  return (<div className="
+    flex flex-col items-center
+    gap-4 sm:gap-6
+    bg-slate-900/95
+    border border-emerald-500/30
+    rounded-none sm:rounded-2xl
+    px-4 sm:px-8 py-6 sm:py-8
+    mx-0 sm:mx-5
+    max-w-lg w-full
+    shadow-2xl shadow-black/50">
     {/* Title */}
     <div className="flex items-center gap-2 sm:gap-3">
       <Users className="text-emerald-400 w-6 h-6 sm:w-7 sm:h-7" />
@@ -95,7 +120,14 @@ export default function LobbyPage() {
       </div>
       <button
         onClick={copyLobbyCode}
-        className="flex items-center gap-1 bg-slate-800 border border-slate-600 rounded-full px-4 py-2 text-slate-300 text-sm hover:bg-slate-700 hover:text-white transition-all"
+        className="flex items-center
+        gap-1
+        bg-slate-800
+        border border-slate-600
+        rounded-full
+        px-4 py-2
+        text-slate-300 text-xs sm:text-sm
+        hover:bg-slate-700 hover:text-white transition-all"
       >
         <Copy className="w-4 h-4" />
         {copied ? "Copied!" : "Copy"}
@@ -121,11 +153,9 @@ export default function LobbyPage() {
           <div
             key={player.id}
             className={`
-                flex items-center gap-3 sm:gap-4 px-3 sm:px-5 py-3 sm:py-4
-                bg-slate-800/80 rounded-xl
-                border ${isMe ? "border-slate-500" : playerBorders[index % 4]}
-                ${isMe ? "shadow-[0_0_15px_rgba(100,116,139,0.15)]" : ""}
-                transition-all
+              ${cardBase}
+              ${isMe ? "border-slate-500" : playerBorders[index % 4]}
+              ${isMe ? "shadow-[0_0_15px_rgba(100,116,139,0.15)]" : ""}
               `}
           >
             <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full ${playerColors[index % 4]} shrink-0`} />
@@ -133,8 +163,8 @@ export default function LobbyPage() {
             <div className="flex flex-col flex-1">
               <span className="text-white font-semibold">{player.userName}</span>
               <div className="flex gap-2">
-                {player.isHost && <span className="text-slate-400 text-xs">Host</span>}
-                {isMe && <span className="text-emerald-400 text-xs font-semibold">You</span>}
+                {player.isHost && <span className={`${labelSmall} text-slate-400`}>Host</span>}
+                {isMe && <span className={`${labelSmall} text-emerald-400`}>You</span>}
               </div>
             </div>
 
@@ -172,16 +202,21 @@ export default function LobbyPage() {
       {currentPlayer && !currentPlayer.ready && (
         <button
           onClick={ToggleReady}
-          className="w-full py-2.5 sm:py-3 text-sm sm:text-base bg-red-500 hover:bg-red-400 text-white font-bold rounded-xl transition-all hover:scale-[1.02] active:scale-100"
-        >
+          className={`
+        ${buttonBase}
+        bg-red-500 hover:bg-red-400 text-white
+        hover:scale-[1.02] active:scale-100
+      `}>
           Ready
         </button>
       )}
       {currentPlayer?.ready && (
         <button
           onClick={ToggleReady}
-          className="w-full py-2.5 sm:py-3 text-sm sm:text-base bg-slate-700 hover:bg-slate-600 text-slate-300 font-bold rounded-xl transition-all"
-        >
+          className={`
+        ${buttonBase}
+        bg-slate-700 hover:bg-slate-600 text-slate-300
+      `}>
           Cancel Ready
         </button>
       )}
@@ -190,17 +225,26 @@ export default function LobbyPage() {
         session?.players.every(player => player.ready) ? (
           <button
             onClick={() => StartGame()}
-            className="w-full py-2.5 sm:py-3 text-sm sm:text-base bg-emerald-500 hover:bg-emerald-400 text-white font-bold rounded-xl text-center transition-all hover:scale-[1.02] active:scale-100"
-          >
+            className={`
+          ${buttonBase}
+          bg-emerald-500 hover:bg-emerald-400 text-white text-center
+          hover:scale-[1.02] active:scale-100
+        `}>
             Starta Spel
           </button>
         ) : (
-          <div className="w-full py-2.5 sm:py-3 text-sm sm:text-base bg-emerald-500/20 text-emerald-300/60 font-bold rounded-xl text-center">
+          <div className={`
+        ${buttonBase}
+        bg-emerald-500/20 text-emerald-300/60 text-center
+        `}>
             Waiting for all players to be ready...
           </div>
         )
       ) : (
-        <div className="w-full py-2.5 sm:py-3 text-sm sm:text-base bg-slate-800 text-slate-400 font-bold rounded-xl text-center">
+        <div className={`
+       ${buttonBase}
+       bg-slate-800 text-slate-400 text-center
+      `}>
           Waiting for the host to start...
         </div>
       )}
