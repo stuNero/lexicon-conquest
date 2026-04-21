@@ -1,0 +1,15 @@
+{
+  "name": "post-they",
+  "version": "1.0.0",
+  "description": "",
+  "license": "ISC",
+  "author": "",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "test:api": "post-they run api-tests"
+  },
+  "devDependencies": {
+    "post-they": "^0.2.0"
+  }
+}

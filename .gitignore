@@ -137,4 +137,4 @@ dist-ssr
 # Tests
 playwright-report/
 test-results/
-.features-gen/
+.features-gen

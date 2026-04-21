@@ -22,10 +22,15 @@ app.UseStaticFiles();
 
 app.UseSession();
 
+
+
+// this endpoint is for render to see that backend is working fine
+app.MapGet("/api/health", () => Results.Ok("OK"));
 Endpoints.GetSessions(app);
 Endpoints.CreatePlayer(app);
 Endpoints.DeleteSession(app);
 Endpoints.ToggleReady(app);
 Endpoints.CreateSession(app);
 Endpoints.StartGame(app);
+
 app.Run();
