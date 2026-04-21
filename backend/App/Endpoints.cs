@@ -10,9 +10,9 @@ public static class Endpoints
   // new session endpoint
   public record CreateSessionRequest(string userName);
   public record NewSession(string url);
-  public static void CreateSession(WebApplication app, GameServer engine)
+  public static void CreateSession(WebApplication app)
   {
-    app.MapPost("/api/sessions", (CreateSessionRequest request) =>
+    app.MapPost("/api/sessions", (CreateSessionRequest request, GameServer engine) =>
     {
 
       if (request == null || string.IsNullOrWhiteSpace(request.userName))
@@ -40,7 +40,8 @@ public static class Endpoints
       // add creator as first player
       session.players.Add(new Player(
       userName: request.userName,
-      ready: false
+      ready: false,
+      isHost: true
       ));
       engine.gameSessions.Add(session);
 
@@ -57,35 +58,37 @@ public static class Endpoints
   // get all session
   // get session by id can be accessed via url query 
   public record sessionObject(string Url, Player[] players);
-  public static void GetSessions(WebApplication app, GameServer Server)
+  public static void GetSessions(WebApplication app)
   {
-    app.MapGet("/api/sessions", (string? url) =>
+    app.MapGet("/api/sessions", (string? url, GameServer server) =>
     {
       // For specified search:
       if (!string.IsNullOrWhiteSpace(url))
       {
-        return Server.gameSessions
+        return server.gameSessions
         .Where(s => s.Url == url)
         .Select(s => new sessionObject(
           s.Url,
           s.players.ToArray()
-          ));
+        ));
       }
+
       // For generic search
-      return Server.gameSessions
+      return server.gameSessions
       .Select(s => new sessionObject(
         s.Url,
         s.players.ToArray()
-        ));
+      ));
     });
   }
 
 
+
   public record NewPlayer(string userName, bool ready = false);
 
-  public static void CreatePlayer(WebApplication app, GameServer server)
+  public static void CreatePlayer(WebApplication app)
   {
-    app.MapPost("/api/sessions/{url}", (string url, NewPlayer createP) =>
+    app.MapPost("/api/sessions/{url}", (string url, NewPlayer createP, GameServer server) =>
     {
       var session = server.gameSessions.FirstOrDefault(s => s.Url == url);
       if (session == null)
@@ -105,29 +108,30 @@ public static class Endpoints
       Player newPlayer = new Player
       (
         userName: createP.userName,
-        ready: createP.ready
+        ready: createP.ready,
+        isHost: false
       );
 
       session.players.Add(newPlayer);
       return Results.Ok(newPlayer);
     });
   }
-  public static void DeleteSession(WebApplication app, GameServer Server)
+  public static void DeleteSession(WebApplication app)
   {
-    app.MapDelete("/api/sessions/{url}", (string url) =>
+    app.MapDelete("/api/sessions/{url}", (string url, GameServer server) =>
     {
-      if (!Server.gameSessions.Exists(s => s.Url == url))
+      if (!server.gameSessions.Exists(s => s.Url == url))
       {
         return Results.NotFound(new { message = $"Session with url: {url} could not be found" });
       }
-      Server.gameSessions.RemoveAll(s => s.Url == url);
+      server.gameSessions.RemoveAll(s => s.Url == url);
 
       return Results.Ok();
     });
   }
-  public static void ToggleReady(WebApplication app, GameServer Server)
+  public static void ToggleReady(WebApplication app)
   {
-    app.MapPut("/api/players/", (string url, Guid id) =>
+    app.MapPut("/api/players/", (string url, Guid id, GameServer Server) =>
     {
       foreach (GameSession session in Server.gameSessions)
       {

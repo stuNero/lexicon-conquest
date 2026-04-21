@@ -29,7 +29,6 @@ public class GameSession
 
     return players[CurrentPlayerIndex];
   }
-  //Nytt
   public void StartGame(int boardSize, WordService wordService)
   {
     Board = new Board(boardSize, boardSize, wordService, "common_words");

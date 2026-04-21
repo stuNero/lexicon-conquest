@@ -5,10 +5,19 @@ using backend.App.GameServices;
 using backend.Gamecomponents;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// GameServer is our shared in-memory session store.
+// As singleton so endpoints and SignalR use the same session list.
 builder.Services.AddSingleton<GameServer>();
 builder.Services.AddSignalR();
 builder.Services.AddDistributedMemoryCache();
+// WordService is shared so game boards can be created through dependency injection too.
+builder.Services.AddSingleton<WordService>();
+
 builder.Services.AddSession(option =>
+
+
+
 {
     option.Cookie.HttpOnly = true;
     option.Cookie.IsEssential = true;
@@ -25,16 +34,13 @@ app.UseStaticFiles();
 app.UseSession();
 
 
-GameServer Server = new GameServer();
-var wordService = new WordService();
-
-Endpoints.GetSessions(app, Server);
-Endpoints.CreatePlayer(app, Server);
-Endpoints.DeleteSession(app, Server);
-Endpoints.ToggleReady(app, Server);
-Endpoints.CreateSession(app, Server);
-GameEndpoints.StartGame(app, Server, wordService);
-GameEndpoints.ClaimTile(app, Server);
+Endpoints.GetSessions(app);
+Endpoints.CreatePlayer(app);
+Endpoints.DeleteSession(app);
+Endpoints.ToggleReady(app);
+Endpoints.CreateSession(app);
+GameEndpoints.StartGame(app);
+GameEndpoints.ClaimTile(app);
 
 
 // this endpoint is for render to see that backend is working fine

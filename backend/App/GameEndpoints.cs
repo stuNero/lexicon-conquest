@@ -9,10 +9,10 @@ public record ClaimTileRequest(Guid playerId, int x, int y);
 
 public static class GameEndpoints
 {
-  public static void StartGame(WebApplication app, GameServer server, WordService wordService)
+  public static void StartGame(WebApplication app)
   {
     app.MapPost("/api/sessions/{url}/start",
-    (string url, StartGameRequest request) =>
+    (string url, StartGameRequest request, GameServer server, WordService wordService) =>
     /*
     This is how the singnalR should look like later
     app.MapPost("/api/sessions/{url}/start",
@@ -71,10 +71,10 @@ public static class GameEndpoints
     });
   }
 
-  public static void ClaimTile(WebApplication app, GameServer server)
+  public static void ClaimTile(WebApplication app)
   {
     app.MapPost("/api/sessions/{url}/claim-tile",
-    (string url, ClaimTileRequest request) =>
+    (string url, ClaimTileRequest request, GameServer server) =>
     {
       var session = server.gameSessions.FirstOrDefault(s => s.Url == url);
 
