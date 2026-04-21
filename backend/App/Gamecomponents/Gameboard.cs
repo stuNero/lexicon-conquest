@@ -66,7 +66,7 @@ public class Board
   }
 
 
-  //STEG 2: KOPPLA GRANNAR
+  //STEG 2: KOPPLA GRANNAR 
 
   private void ConnectedTiles()
   {

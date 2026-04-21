@@ -15,10 +15,12 @@ public class Tile
   // each tile has a word
   public string Word { get; set; }
 
+  public Guid? ControlledByPlayerId { get; set; }
   public Tile(int x, int y)
   {
     X = x;
     Y = y;
     Word = "";
+    ControlledByPlayerId = null;
   }
 }
