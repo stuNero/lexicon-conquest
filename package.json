@@ -16,6 +16,7 @@
     "test": "npm run test:xunit && npm run test:api && npm run test:e2e"
   },
   "dependencies": {
+    "@microsoft/signalr": "^10.0.0",
     "@tailwindcss/vite": "^4.2.2",
     "D": "^1.0.0",
     "lucide": "^1.7.0",

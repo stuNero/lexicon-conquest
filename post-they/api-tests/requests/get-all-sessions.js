@@ -9,7 +9,7 @@ export function postResponse() {
   });
 
   const json = pm.response.json();
-  
+
   pm.test('Response is an array', () => {
     pm.expect(json).to.be.an('array');
   });

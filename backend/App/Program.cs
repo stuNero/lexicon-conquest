@@ -3,17 +3,17 @@ using System.Text.Json.Nodes;
 using backend;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddCors();
-
+builder.Services.AddSingleton<GameServer>();
+builder.Services.AddSignalR();
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(option =>
 {
     option.Cookie.HttpOnly = true;
     option.Cookie.IsEssential = true;
-}
-);
+});
 
 var app = builder.Build();
+app.MapHub<GameHub>("/gamehub");
 
 // this two use makes the program to go through wwwroot folder to get the 
 // frontend when we start backend.
@@ -22,6 +22,7 @@ app.UseStaticFiles();
 
 app.UseSession();
 
+<<<<<<< HEAD
 app.UseCors(policy =>
     policy.AllowAnyOrigin()
           .AllowAnyMethod()
@@ -36,4 +37,12 @@ Endpoints.CreatePlayer(app, Server);
 Endpoints.DeleteSession(app, Server);
 Endpoints.ToggleReady(app, Server);
 Endpoints.CreateSession(app, Server);
+=======
+Endpoints.GetSessions(app);
+Endpoints.CreatePlayer(app);
+Endpoints.DeleteSession(app);
+Endpoints.ToggleReady(app);
+Endpoints.CreateSession(app);
+Endpoints.StartGame(app);
+>>>>>>> DEV
 app.Run();
