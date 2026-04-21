@@ -27,6 +27,9 @@ app.UseCors(policy =>
           .AllowAnyMethod()
           .AllowAnyHeader());
 
+// this endpoint is for render to see that backend is working fine
+app.MapGet("/api/health", () => Results.Ok("OK"));
+
 GameServer Server = new GameServer();
 Endpoints.GetSessions(app, Server);
 Endpoints.CreatePlayer(app, Server);
