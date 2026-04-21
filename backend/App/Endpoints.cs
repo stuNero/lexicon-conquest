@@ -37,20 +37,31 @@ public static class Endpoints
         players = new List<Player>()
       };
 
-      // add creator as first player
-      session.players.Add(new Player(
-      userName: request.userName,
-      ready: false,
-      isHost: true
-      ));
+      /* Save the host player in a variable so we can return it directly to the frontend. T
+       The frontend needs this player's id for localStorage after creating a lobby.
+       This is not ideal, i would prefer every data contract via DTOs
+        */
+      var hostPlayer = new Player(
+        userName: request.userName,
+        ready: false,
+        isHost: true
+      );
+
+      session.players.Add(hostPlayer);
       engine.gameSessions.Add(session);
 
       return Results.Created($"/api/sessions/{url}", new
       {
         message = "Session created",
         url = url,
-        players = session.players
+
+        // Keep players for backwards compatibility with code that already reads the full player list.
+        players = session.players,
+
+        // Add player so the frontend can read response.player.id directly. 
+        player = hostPlayer
       });
+
 
     });
   }
