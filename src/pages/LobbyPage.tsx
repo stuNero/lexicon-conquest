@@ -97,157 +97,176 @@ export default function LobbyPage() {
   rounded-xl transition-all
 `;
 
-  return (<div className="
-    flex flex-col items-center
-    gap-4 sm:gap-6
-    bg-slate-900/95
-    border border-emerald-500/30
-    rounded-none sm:rounded-2xl
-    px-4 sm:px-8 py-6 sm:py-8
-    mx-0 sm:mx-5
-    max-w-lg w-full
-    shadow-2xl shadow-black/50">
-    {/* Title */}
-    <div className="flex items-center gap-2 sm:gap-3">
-      <Users className="text-emerald-400 w-6 h-6 sm:w-7 sm:h-7" />
-      <h1 className="text-xl sm:text-2xl font-bold text-white">Game Lobby</h1>
-    </div>
-    {/* Lobby code */}
-    <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-3 w-full sm:w-auto">
-      <div className="bg-slate-800 border border-slate-600 rounded-full px-4 sm:px-5 py-2 flex items-center gap-2 text-xs sm:text-sm">
-        <span className="text-slate-400">Lobby Code:</span>
-        <span className="text-white font-mono font-bold tracking-wider">{id?.toUpperCase()}</span>
+
+  return (
+    <div className="min-h-screen relative flex items-center justify-center overflow-hidden py-6">
+
+      <div className="absolute inset-0 z-0">
+        <img
+          src="/bg-image.png"
+          className="w-full h-full object-cover"
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/50 to-black/40" />
       </div>
-      <button
-        onClick={copyLobbyCode}
-        className="flex items-center
-        gap-1
-        bg-slate-800
-        border border-slate-600
-        rounded-full
-        px-4 py-2
-        text-slate-300 text-xs sm:text-sm
-        hover:bg-slate-700 hover:text-white transition-all"
-      >
-        <Copy className="w-4 h-4" />
-        {copied ? "Copied!" : "Copy"}
-      </button>
-    </div>
-    {/* Player count */}
-    <p className="text-slate-400 text-sm">
-      Players: {session?.players.length ?? 0}/4
-    </p>
+      <div className="relative z-10 w-full flex justify-center px-4">
 
-    {/* Separator */}
-    <div className="h-px w-full bg-gradient-to-r from-transparent via-slate-600 to-transparent" />
+        <div className="
+          flex flex-col items-center
+          gap-4 sm:gap-6
+          bg-slate-900/95
+          border border-emerald-500/30
+          rounded-none sm:rounded-2xl
+          px-4 sm:px-8 py-6 sm:py-8
+          mx-0 sm:mx-5
+          max-w-lg w-full
+          shadow-2xl shadow-black/50
+          ">
 
-    {/* Players heading */}
-    <h2 className="text-base sm:text-lg font-bold text-white self-start">Players</h2>
+          {/* Title */}
+          <div className="flex items-center gap-2 sm:gap-3">
+            <Users className="text-emerald-400 w-6 h-6 sm:w-7 sm:h-7" />
+            <h1 className="text-xl sm:text-2xl font-bold text-white">Game Lobby</h1>
+          </div>
 
-    {/* Loop through all players in sesh */}
-    <div className="flex flex-col gap-3 w-full">
-      {session?.players.map((player, index) => {
-        // Kolla om det här kortet är DIN spelare
-        const isMe = player.id === myId;
-        return (
-          <div
-            key={player.id}
-            className={`
+          {/* Lobby code */}
+          <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-3 w-full sm:w-auto">
+            <div className="bg-slate-800 border border-slate-600 rounded-full px-4 sm:px-5 py-2 flex items-center gap-2 text-xs sm:text-sm">
+              <span className="text-slate-400">Lobby Code:</span>
+              <span className="text-white font-mono font-bold tracking-wider">{id?.toUpperCase()}</span>
+            </div>
+            <button
+              onClick={copyLobbyCode}
+              className="flex items-center
+                gap-1
+                bg-slate-800
+                border border-slate-600
+                rounded-full
+                px-4 py-2
+                text-slate-300 text-xs sm:text-sm
+                hover:bg-slate-700 hover:text-white transition-all"
+            >
+              <Copy className="w-4 h-4" />
+              {copied ? "Copied!" : "Copy"}
+            </button>
+          </div>
+          {/* Player count */}
+          <p className="text-slate-400 text-sm">
+            Players: {session?.players.length ?? 0}/4
+          </p>
+
+          {/* Separator */}
+          <div className="h-px w-full bg-gradient-to-r from-transparent via-slate-600 to-transparent" />
+
+          {/* Players heading */}
+          <h2 className="text-base sm:text-lg font-bold text-white self-start">Players</h2>
+
+          {/* Loop through all players in sesh */}
+          <div className="flex flex-col gap-3 w-full">
+            {session?.players.map((player, index) => {
+              // Kolla om det här kortet är DIN spelare
+              const isMe = player.id === myId;
+              return (
+                <div
+                  key={player.id}
+                  className={`
               ${cardBase}
               ${isMe ? "border-slate-500" : playerBorders[index % 4]}
               ${isMe ? "shadow-[0_0_15px_rgba(100,116,139,0.15)]" : ""}
               `}
-          >
-            <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full ${playerColors[index % 4]} shrink-0`} />
+                >
+                  <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full ${playerColors[index % 4]} shrink-0`} />
 
-            <div className="flex flex-col flex-1">
-              <span className="text-white font-semibold">{player.userName}</span>
-              <div className="flex gap-2">
-                {player.isHost && <span className={`${labelSmall} text-slate-400`}>Host</span>}
-                {isMe && <span className={`${labelSmall} text-emerald-400`}>You</span>}
-              </div>
-            </div>
+                  <div className="flex flex-col flex-1">
+                    <span className="text-white font-semibold">{player.userName}</span>
+                    <div className="flex gap-2">
+                      {player.isHost && <span className={`${labelSmall} text-slate-400`}>Host</span>}
+                      {isMe && <span className={`${labelSmall} text-emerald-400`}>You</span>}
+                    </div>
+                  </div>
 
-            {isMe ? (
-              <button
-                onClick={ToggleReady}
-                className={`
+                  {isMe ? (
+                    <button
+                      onClick={ToggleReady}
+                      className={`
                     flex items-center gap-1 text-sm font-semibold
                     px-3 py-1 rounded-lg
                     transition-all hover:scale-105
                     ${player.ready
-                    ? "text-emerald-400 hover:bg-emerald-500/10"
-                    : "text-red-400 hover:bg-red-500/10"
-                  }
+                          ? "text-emerald-400 hover:bg-emerald-500/10"
+                          : "text-red-400 hover:bg-red-500/10"
+                        }
                   `}
-              >
-                {player.ready
-                  ? <><Check className="w-4 h-4" /> Ready</>
-                  : <><X className="w-4 h-4" /> Not Ready</>
-                }
-              </button>
-            ) : (
-              <span className={`flex items-center gap-1 text-sm font-semibold ${player.ready ? "text-emerald-400" : "text-red-400"}`}>
-                {player.ready
-                  ? <><Check className="w-4 h-4" /> Ready</>
-                  : <><X className="w-4 h-4" /> Not Ready</>
-                }
-              </span>
-            )}
+                    >
+                      {player.ready
+                        ? <><Check className="w-4 h-4" /> Ready</>
+                        : <><X className="w-4 h-4" /> Not Ready</>
+                      }
+                    </button>
+                  ) : (
+                    <span className={`flex items-center gap-1 text-sm font-semibold ${player.ready ? "text-emerald-400" : "text-red-400"}`}>
+                      {player.ready
+                        ? <><Check className="w-4 h-4" /> Ready</>
+                        : <><X className="w-4 h-4" /> Not Ready</>
+                      }
+                    </span>
+                  )}
+                </div>
+              );
+            })}
           </div>
-        );
-      })}
-    </div>
-    <div className="flex flex-col gap-3 w-full mt-2">
-      {currentPlayer && !currentPlayer.ready && (
-        <button
-          onClick={ToggleReady}
-          className={`
+          <div className="flex flex-col gap-3 w-full mt-2">
+            {currentPlayer && !currentPlayer.ready && (
+              <button
+                onClick={ToggleReady}
+                className={`
         ${buttonBase}
         bg-red-500 hover:bg-red-400 text-white
         hover:scale-[1.02] active:scale-100
       `}>
-          Ready
-        </button>
-      )}
-      {currentPlayer?.ready && (
-        <button
-          onClick={ToggleReady}
-          className={`
+                Ready
+              </button>
+            )}
+            {currentPlayer?.ready && (
+              <button
+                onClick={ToggleReady}
+                className={`
         ${buttonBase}
         bg-slate-700 hover:bg-slate-600 text-slate-300
       `}>
-          Cancel Ready
-        </button>
-      )}
+                Cancel Ready
+              </button>
+            )}
 
-      {currentPlayer?.isHost ? (
-        session?.players.every(player => player.ready) ? (
-          <button
-            onClick={() => StartGame()}
-            className={`
+            {currentPlayer?.isHost ? (
+              session?.players.every(player => player.ready) ? (
+                <button
+                  onClick={() => StartGame()}
+                  className={`
           ${buttonBase}
           bg-emerald-500 hover:bg-emerald-400 text-white text-center
           hover:scale-[1.02] active:scale-100
         `}>
-            Starta Spel
-          </button>
-        ) : (
-          <div className={`
+                  Starta Spel
+                </button>
+              ) : (
+                <div className={`
         ${buttonBase}
         bg-emerald-500/20 text-emerald-300/60 text-center
         `}>
-            Waiting for all players to be ready...
-          </div>
-        )
-      ) : (
-        <div className={`
+                  Waiting for all players to be ready...
+                </div>
+              )
+            ) : (
+              <div className={`
        ${buttonBase}
        bg-slate-800 text-slate-400 text-center
       `}>
-          Waiting for the host to start...
+                Waiting for the host to start...
+              </div>
+            )}
+          </div>
         </div>
-      )}
-    </div>
-  </div >);
+      </div >
+    </div >
+  );
 };
