@@ -4,7 +4,7 @@ import {   Sword,
   Grid3x3,
   Trophy, } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import fetchJson from '../utils/fetchjson';
+import fetchJson from '../utils/fetchJson';
 import Player from '../interfaces/Player';
 
 
