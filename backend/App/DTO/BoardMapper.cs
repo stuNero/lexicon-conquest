@@ -19,7 +19,8 @@ public static class BoardMapper
       dto.Tiles.Add(new TileDto(
      tile.X,
      tile.Y,
-     tile.Word
+     tile.Word,
+     tile.ControlledByPlayerId
    ));
     }
     // Return clean data ready for frontend

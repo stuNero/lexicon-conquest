@@ -9,10 +9,12 @@ public class TileDto
   // The word shown to the player (later this can be masked)
   public string Word { get; set; }
 
-  public TileDto(int x, int y, string word)
+  public Guid? ControlledByPlayerId { get; set; }
+  public TileDto(int x, int y, string word, Guid? controlledByPlayerId)
   {
     X = x;
     Y = y;
     Word = word;
+    ControlledByPlayerId = controlledByPlayerId;
   }
 }
