@@ -137,8 +137,4 @@ dist-ssr
 # Tests
 playwright-report/
 test-results/
-<<<<<<< HEAD
 .features-gen
-=======
-.features-gen/
->>>>>>> DEV

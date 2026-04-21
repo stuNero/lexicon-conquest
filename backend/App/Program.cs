@@ -22,27 +22,15 @@ app.UseStaticFiles();
 
 app.UseSession();
 
-<<<<<<< HEAD
-app.UseCors(policy =>
-    policy.AllowAnyOrigin()
-          .AllowAnyMethod()
-          .AllowAnyHeader());
+
 
 // this endpoint is for render to see that backend is working fine
 app.MapGet("/api/health", () => Results.Ok("OK"));
-
-GameServer Server = new GameServer();
-Endpoints.GetSessions(app, Server);
-Endpoints.CreatePlayer(app, Server);
-Endpoints.DeleteSession(app, Server);
-Endpoints.ToggleReady(app, Server);
-Endpoints.CreateSession(app, Server);
-=======
 Endpoints.GetSessions(app);
 Endpoints.CreatePlayer(app);
 Endpoints.DeleteSession(app);
 Endpoints.ToggleReady(app);
 Endpoints.CreateSession(app);
 Endpoints.StartGame(app);
->>>>>>> DEV
+
 app.Run();
