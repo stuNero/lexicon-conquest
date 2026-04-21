@@ -6,6 +6,7 @@ import * as signalR from "@microsoft/signalr";
 import type GameSession from "../interfaces/GameSession";
 import type Player from "../interfaces/Player";
 
+// Färger för spelarna, varje spelare får en unik färg baserat på sin position
 const playerColors = [
   "bg-red-500",
   "bg-blue-500",
@@ -39,6 +40,8 @@ export default function LobbyPage() {
       headers: { 'Content-Type': 'application/json' }
     });
   }
+
+  // Kopierar lobby-koden till urklipp och visar det i 2 sekunder
   function copyLobbyCode() {
     if (id) {
       navigator.clipboard.writeText(id);
@@ -112,6 +115,7 @@ export default function LobbyPage() {
     {/* Loop through all players in sesh */}
     <div className="flex flex-col gap-3 w-full">
       {session?.players.map((player, index) => {
+        // Kolla om det här kortet är DIN spelare
         const isMe = player.id === myId;
         return (
           <div
@@ -164,41 +168,42 @@ export default function LobbyPage() {
         );
       })}
     </div>
-    {
-      currentPlayer?.isHost ?
-        session?.players.every(player => player.ready == true) ?
-          // if player is host and every player is ready
+    <div className="flex flex-col gap-3 w-full mt-2">
+      {currentPlayer && !currentPlayer.ready && (
+        <button
+          onClick={ToggleReady}
+          className="w-full py-3 bg-red-500 hover:bg-red-400 text-white font-bold rounded-xl transition-all hover:scale-[1.02] active:scale-100"
+        >
+          Ready
+        </button>
+      )}
+      {currentPlayer?.ready && (
+        <button
+          onClick={ToggleReady}
+          className="w-full py-3 bg-slate-700 hover:bg-slate-600 text-slate-300 font-bold rounded-xl transition-all"
+        >
+          Cancel Ready
+        </button>
+      )}
+
+      {currentPlayer?.isHost ? (
+        session?.players.every(player => player.ready) ? (
           <button
-            className="
-              border-2 border-stone-700 rounded
-            bg-green-700 hover:scale-110
-              button
-              flex flex-col justify-center p-1
-              "
-            type="button"
             onClick={() => StartGame()}
+            className="w-full py-3 bg-emerald-500 hover:bg-emerald-400 text-white font-bold rounded-xl text-center transition-all hover:scale-[1.02] active:scale-100"
           >
             Starta Spel
           </button>
-          :
-          // if player is host but every player isn't ready
-          <button className="
-          border-2 border-stone-700 rounded
-          bg-red-800
-          button
-          h-10 w-auto my-2 px-2">
-            All Players Are Not Ready
-          </button>
-        :
-        // if player isn't host
-        <button className="
-          border-2 border-stone-500 rounded
-          bg-stone-600
-          button
-          h-10 w-auto my-2 px-2">
-          Waiting...
-        </button>
-
-    }
+        ) : (
+          <div className="w-full py-3 bg-emerald-500/20 text-emerald-300/60 font-bold rounded-xl text-center">
+            Waiting for all the players to be ready...
+          </div>
+        )
+      ) : (
+        <div className="w-full py-3 bg-slate-800 text-slate-400 font-bold rounded-xl text-center">
+          Waiting for the host to start...
+        </div>
+      )}
+    </div>
   </div >);
 };
