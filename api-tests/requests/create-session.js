@@ -15,15 +15,16 @@ export function postResponse() {
   });
 
   const json = pm.response.json();
-  
+
   pm.test('Response contains url', () => {
     pm.expect(json).to.have.property('url');
   });
-  
+
   pm.test('Response contains players array', () => {
-    pm.expect(json).to.have.property('players');
-    pm.expect(json.players).to.be.an('array');
+    pm.expect(json).to.have.property('player');
+    pm.expect(json.player).to.be.an('object');
   });
-  
+
   pm.collectionVariables.set('sessionUrl', json.url);
+  pm.collectionVariables.set('hostPlayerId', json.player.id);
 }
