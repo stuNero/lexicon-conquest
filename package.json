@@ -1,0 +1,50 @@
+{
+  "name": "lexicon-conquest",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "start": "concurrently -n backend,vite -c blue,green npm:backend npm:dev",
+    "dev": "vite",
+    "backend": "dotnet run --project backend/App",
+    "build": "tsc -b && vite build",
+    "lint": "eslint .",
+    "preview": "vite preview",
+    "test:xunit": "dotnet test backend/MyApp.slnx",
+    "test:api": "cd post-they && npm run test:api",
+    "test:e2e": "npx bddgen && npx playwright test",
+    "test": "npm run test:xunit && npm run test:api && npm run test:e2e"
+  },
+  "dependencies": {
+    "@microsoft/signalr": "^10.0.0",
+    "@tailwindcss/vite": "^4.2.2",
+    "D": "^1.0.0",
+    "lucide": "^1.7.0",
+    "lucide-react": "^1.7.0",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4",
+    "react-router-dom": "^7.13.2",
+    "tailwindcss": "^4.2.2"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.29.0",
+    "@eslint/js": "^9.39.4",
+    "@playwright/test": "^1.59.1",
+    "@rolldown/plugin-babel": "^0.2.1",
+    "@types/babel__core": "^7.20.5",
+    "@types/node": "^24.12.0",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^6.0.1",
+    "babel-plugin-react-compiler": "^1.0.0",
+    "concurrently": "^9.2.1",
+    "eslint": "^9.39.4",
+    "eslint-plugin-react-hooks": "^7.0.1",
+    "eslint-plugin-react-refresh": "^0.5.2",
+    "globals": "^17.4.0",
+    "playwright-bdd": "^8.5.0",
+    "typescript": "~5.9.3",
+    "typescript-eslint": "^8.57.0",
+    "vite": "^8.0.1"
+  }
+}
