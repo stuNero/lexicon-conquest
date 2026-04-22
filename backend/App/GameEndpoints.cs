@@ -8,6 +8,9 @@ using Microsoft.AspNetCore.SignalR;
 public record StartGameRequest(int boardSize);
 public record ClaimTileRequest(Guid playerId, int x, int y);
 
+public record GuessWordRequest(Guid playerId, int x, int y, string word);
+
+
 public static class GameEndpoints
 {
   public static void StartGame(WebApplication app)
@@ -106,6 +109,34 @@ public static class GameEndpoints
 
    return Results.Ok(sessionDto);
  });
+  }
+  public static void GuessWord(WebApplication app)
+  {
+    app.MapPost("/api/sessions/{url}/guess-word", async (
+      string url,
+      GuessWordRequest request,
+      GameServer server,
+      GuessWordHandler guessWordHandler,
+      IHubContext<GameHub> hubContext
+    ) =>
+    {
+      var result = guessWordHandler.Handle(
+        url,
+        request.playerId,
+        request.x,
+        request.y,
+        request.word,
+        server
+      );
+
+      if (!result.Success)
+        return Results.BadRequest(new { message = result.Message });
+
+      await hubContext.Clients.Group(url)
+        .SendAsync("SessionUpdated", result.Session);
+
+      return Results.Ok(result.Session);
+    });
   }
 
 }
