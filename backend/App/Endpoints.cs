@@ -1,7 +1,7 @@
 namespace backend;
 
 using backend.DTO;
-
+using Microsoft.AspNetCore.SignalR;
 
 public static class Endpoints
 {
@@ -137,9 +137,14 @@ public static class Endpoints
   }
   public static void ToggleReady(WebApplication app)
   {
-    app.MapPut("/api/players/", (string url, Guid id, GameServer Server) =>
+    app.MapPut("/api/players/", async (
+      GameServer server,
+      string url,
+      Guid id,
+      IHubContext<GameHub> hubContext
+    ) =>
     {
-      foreach (GameSession session in Server.gameSessions)
+      foreach (GameSession session in server.gameSessions)
       {
         if (session.Url == url)
         {
@@ -151,14 +156,23 @@ public static class Endpoints
                 player.Ready = false;
               else if (!player.Ready)
                 player.Ready = true;
-              return Results.Ok();
+
+              var sessionDto = SessionMapper.ToDto(session);
+
+              await hubContext.Clients.Group(url)
+                .SendAsync("SessionUpdated", sessionDto);
+
+              return Results.Ok(sessionDto);
             }
           }
+
           return Results.NotFound(new { message = $"Player with id: {id} could not be found" });
         }
       }
+
       return Results.NotFound(new { message = $"Session with url: {url} could not be found" });
     });
   }
+
 };
 
