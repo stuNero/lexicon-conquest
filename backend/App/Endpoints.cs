@@ -94,7 +94,12 @@ public static class Endpoints
 
   public static void CreatePlayer(WebApplication app)
   {
-    app.MapPost("/api/sessions/{url}", (string url, NewPlayer createP, GameServer server) =>
+    app.MapPost("/api/sessions/{url}", async (
+    string url,
+    NewPlayer createP,
+    GameServer server,
+    IHubContext<GameHub> hubContext
+  ) =>
     {
       var session = server.gameSessions.FirstOrDefault(s => s.Url == url);
       if (session == null)
@@ -119,6 +124,13 @@ public static class Endpoints
       );
 
       session.players.Add(newPlayer);
+
+      // Tell everyone in the lobby that the player list changed.
+      var sessionDto = SessionMapper.ToDto(session);
+
+      await hubContext.Clients.Group(url)
+        .SendAsync("SessionUpdated", sessionDto);
+
       return Results.Ok(newPlayer);
     });
   }
