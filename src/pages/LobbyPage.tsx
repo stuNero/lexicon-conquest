@@ -37,7 +37,10 @@ export default function LobbyPage() {
   async function StartGame() {
     await fetch(`/api/sessions/start/${id}`, {
       method: "POST",
-      headers: { 'Content-Type': 'application/json' }
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        boardSize: localStorage.getItem("boardSize"),
+      })
     });
   }
 
