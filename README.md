@@ -58,6 +58,32 @@ All the tests run automatically in our CI-pipeline on every push and pull reques
 
 
 ## CI/CD Pipeline
+Our pipeline is implemented in Github Actions and has two workflows that automates the process of testing code changes to live deployment. 
+
+# The first workflow, Testing.yml triggers when someone pushes or does pull request to DEV or main. It consist of three jobs:
+
+Security: does secaurity scans for vulnarabilities and leaks. 
+Build: creates the frontend with vite, backend with .NET and validates the Docker file.
+Tests: runs a matrix of unit-tests, API-tests and e2e-tests.
+
+We have a multistage Dockerfile that works in this order:
+Frontend builds with node.js and vite
+Backend builds .NET SDK
+The finished forntend files are copied to the backends wwwroot fodler before publishing
+Finally a run time image is created with .NET ASP.NET
+This ensures that both front and backend are included in the same container.
+
+
+# The second workflow, Deploy.yml triggers only when the testing-workflow has completed succesfully on the main branch. 
+
+It calls on Render Deploy Hook with a secret URL that is saved in Github Secrets. This initiates an automatic deployment to Render. 
+Our production envoirnment is set to Auto-Deploy in Render which means as soon we make changes in our main branch the Render deployment is triggered and we get the new version on the server. 
+
+
+Pipeline is configured so that all test types runs even if one of them fails. Test results are then uploaded to GitHub Actions pipeline-summary. 
+
+
+
 
 
 ## Contributors:
