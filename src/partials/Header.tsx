@@ -3,7 +3,7 @@ export default function Header() {
   return <header
     className="
     w-full
-    h-30
+    h-20
     bg-stone-700
     backdrop-blur-lg
     fixed z-500
