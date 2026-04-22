@@ -3,7 +3,7 @@ namespace backend;
 using backend.Gamecomponents;
 using backend.App.GameServices;
 using backend.DTO;
-// using Microsoft.AspNetCore.SignalR; this lets the file use SignalR’s IHubContext. Needed later
+using Microsoft.AspNetCore.SignalR;
 
 public record StartGameRequest(int boardSize);
 public record ClaimTileRequest(Guid playerId, int x, int y);
@@ -66,47 +66,58 @@ public static class GameEndpoints
   public static void ClaimTile(WebApplication app)
   {
     app.MapPost("/api/sessions/{url}/claim-tile",
-    (string url, ClaimTileRequest request, GameServer server) =>
-    {
-      var session = server.gameSessions.FirstOrDefault(s => s.Url == url);
+ async (
+   string url,
+   ClaimTileRequest request,
+   GameServer server,
+   IHubContext<GameHub> hubContext
+ ) =>
+ {
 
-      if (session == null)
-        return Results.NotFound(new { message = "Session not found" });
+   var session = server.gameSessions.FirstOrDefault(s => s.Url == url);
 
-      if (!session.InGame)
-        return Results.BadRequest(new { message = "Game has not started" });
+   if (session == null)
+     return Results.NotFound(new { message = "Session not found" });
 
-      if (session.Board == null)
-        return Results.BadRequest(new { message = "Board has not been created" });
+   if (!session.InGame)
+     return Results.BadRequest(new { message = "Game has not started" });
 
-      var currentPlayer = session.CurrentPlayer();
+   if (session.Board == null)
+     return Results.BadRequest(new { message = "Board has not been created" });
 
-      if (currentPlayer == null)
-        return Results.BadRequest(new { message = "No current player" });
+   var currentPlayer = session.CurrentPlayer();
 
-      if (currentPlayer.id != request.playerId)
-        return Results.BadRequest(new { message = "It is not this player's turn" });
+   if (currentPlayer == null)
+     return Results.BadRequest(new { message = "No current player" });
 
-      // Find the clicked tile
-      var tile = session.Board.Tiles.FirstOrDefault(t =>
-        t.X == request.x &&
-        t.Y == request.y
-      );
+   if (currentPlayer.id != request.playerId)
+     return Results.BadRequest(new { message = "It is not this player's turn" });
 
-      if (tile == null)
-        return Results.BadRequest(new { message = "Tile does not exist" });
+   // Find the clicked tile
+   var tile = session.Board.Tiles.FirstOrDefault(t =>
+     t.X == request.x &&
+     t.Y == request.y
+   );
 
-      if (tile.ControlledByPlayerId == request.playerId)
-        return Results.BadRequest(new { message = "You already control this tile" });
+   if (tile == null)
+     return Results.BadRequest(new { message = "Tile does not exist" });
 
-      //  Claim / steal the tile
-      tile.ControlledByPlayerId = request.playerId;
+   if (tile.ControlledByPlayerId == request.playerId)
+     return Results.BadRequest(new { message = "You already control this tile" });
 
-      session.NextTurn();
+   //  Claim / steal the tile
+   tile.ControlledByPlayerId = request.playerId;
 
-      // Return the same session DTO shape as other session endpoints.
-      return Results.Ok(SessionMapper.ToDto(session));
-    });
+   session.NextTurn();
+
+   // Build the DTO once so SignalR and HTTP return the same data shape.
+   var sessionDto = SessionMapper.ToDto(session);
+
+   await hubContext.Clients.Group(url)
+     .SendAsync("SessionUpdated", sessionDto);
+
+   return Results.Ok(sessionDto);
+ });
   }
 
 }
