@@ -109,7 +109,7 @@ export default function LobbyPage() {
           src="/bg-image.png"
           className="w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/50 to-black/40" />
+        <div className="absolute inset-0 bg-linear-to-b from-black/20 via-black/50 to-black/40" />
       </div>
       <div className="relative z-10 w-full flex justify-center px-4">
 
@@ -158,7 +158,7 @@ export default function LobbyPage() {
           </p>
 
           {/* Separator */}
-          <div className="h-px w-full bg-gradient-to-r from-transparent via-slate-600 to-transparent" />
+          <div className="h-px w-full bg-linear-to-r from-transparent via-slate-600 to-transparent" />
 
           {/* Players heading */}
           <h2 className="text-base sm:text-lg font-bold text-white self-start">Players</h2>

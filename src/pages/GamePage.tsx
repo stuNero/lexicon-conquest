@@ -58,7 +58,7 @@ export default function GamePage() {
           src="/bg-image.png"
           className="w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/50 to-black/40" />
+        <div className="absolute inset-0 bg-linear-to-b from-black/20 via-black/50 to-black/40" />
       </div>
       <div className="bg-slate-900/85 border border-emerald-500/30 p-3 rounded-2xl shadow-black/50 backdrop-blur-sm">
         {<div className="bg-slate-800 border border-emerald-600 rounded-2xl px-5 flex flex-row ">
@@ -72,7 +72,7 @@ export default function GamePage() {
         <PrintBoard board={board} players={session?.players} />
         <div className="mt-5 bg-slate-800 border border-emerald-600 rounded-2xl mb-10 p-3">
           {/* Loop through all players in sesh */}
-          {session?.players.map((player, index) => (
+          {session?.players.map((player) => (
             // Check on current player ternary
             <div
               key={player.id}

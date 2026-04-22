@@ -7,7 +7,7 @@ import fetchJson from "../utils/fetchJson";
 export default function PrintTile({ tile, playerColor }: { tile: Tile; playerColor?: string; }) {
   const [showPopup, setShowPopup] = useState(false);
   async function claimTile(x: number, y: number) {
-    const response = await fetchJson(`/api/sessions/${localStorage.getItem("sessionID")}/claim-tile`,
+    await fetchJson(`/api/sessions/${localStorage.getItem("sessionID")}/claim-tile`,
       {
         method: "POST",
         headers: {

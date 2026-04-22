@@ -96,7 +96,7 @@ export default function HomePage() {
           src="bg-image.png"
           className="w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/50 to-black/40" />
+        <div className="absolute inset-0 bg-linear-to-b from-black/20 via-black/50 to-black/40" />
 
       </div>
 
@@ -125,7 +125,7 @@ export default function HomePage() {
 
             {/* Feature Cards */}
             <div className="grid grid-cols-2 gap-4 max-w-md mx-auto lg:mx-0">
-              <div className="bg-gradient-to-br from-emerald-900/40 to-green-900/40 p-4 rounded-lg border border-emerald-700/50 backdrop-blur-sm">
+              <div className="bg-linear-to-br from-emerald-900/40 to-green-900/40 p-4 rounded-lg border border-emerald-700/50 backdrop-blur-sm">
                 <Sword className="w-8 h-8 text-emerald-400 mb-2" />
                 <h3 className="text-white font-bold text-sm">
                   Strategic Combat
@@ -135,7 +135,7 @@ export default function HomePage() {
                 </p>
               </div>
 
-              <div className="bg-gradient-to-br from-blue-900/40 to-indigo-900/40 p-4 rounded-lg border border-blue-700/50 backdrop-blur-sm">
+              <div className="bg-linear-to-br from-blue-900/40 to-indigo-900/40 p-4 rounded-lg border border-blue-700/50 backdrop-blur-sm">
                 <Users className="w-8 h-8 text-blue-400 mb-2" />
                 <h3 className="text-white font-bold text-sm">
                   Multiplayer
@@ -145,7 +145,7 @@ export default function HomePage() {
                 </p>
               </div>
 
-              <div className="bg-gradient-to-br from-purple-900/40 to-pink-900/40 p-4 rounded-lg border border-purple-700/50 backdrop-blur-sm">
+              <div className="bg-linear-to-br from-purple-900/40 to-pink-900/40 p-4 rounded-lg border border-purple-700/50 backdrop-blur-sm">
                 <Grid3x3 className="w-8 h-8 text-purple-400 mb-2" />
                 <h3 className="text-white font-bold text-sm">
                   Custom Boards
@@ -155,7 +155,7 @@ export default function HomePage() {
                 </p>
               </div>
 
-              <div className="bg-gradient-to-br from-amber-900/40 to-orange-900/40 p-4 rounded-lg border border-amber-700/50 backdrop-blur-sm">
+              <div className="bg-linear-to-br from-amber-900/40 to-orange-900/40 p-4 rounded-lg border border-amber-700/50 backdrop-blur-sm">
                 <Trophy className="w-8 h-8 text-amber-400 mb-2" />
                 <h3 className="text-white font-bold text-sm">
                   Compete
@@ -180,7 +180,7 @@ export default function HomePage() {
                 <button
                   className={`bg-black p-2 rounded-xl flex-1 border-black border-4 cursor-pointer
               ${activeBtn === 'create'
-                      ? "bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-700 hover:to-green-700 text-white shadow-lg shadow-emerald-900/50"
+                      ? "bg-linear-to-r from-emerald-600 to-green-600 hover:from-emerald-700 hover:to-green-700 text-white shadow-lg shadow-emerald-900/50"
                       : "bg-transparent hover:bg-gray-700/50 text-gray-400"}`}
                   onClick={switchToCreate}
                 >
@@ -191,7 +191,7 @@ export default function HomePage() {
                 <button
                   className={`bg-black p-2 rounded-xl flex-1 border-black border-4 cursor-pointer
               ${activeBtn === 'join'
-                      ? "bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-700 hover:to-green-700 text-white shadow-lg shadow-emerald-900/50"
+                      ? "bg-linear-to-r from-emerald-600 to-green-600 hover:from-emerald-700 hover:to-green-700 text-white shadow-lg shadow-emerald-900/50"
                       : "bg-transparent hover:bg-gray-700/50 text-gray-400"}`}
                   onClick={switchToJoin}
                 >
@@ -294,7 +294,7 @@ export default function HomePage() {
                   type="submit"
                   className="
                   w-full
-                  bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-700 hover:to-green-700 text-white shadow-emerald-900/50
+                  bg-linear-to-r from-emerald-600 to-green-600 hover:from-emerald-700 hover:to-green-700 text-white shadow-emerald-900/50
                   my-8
                   px-4 py-3 rounded-xl 
                   cursor-pointer
