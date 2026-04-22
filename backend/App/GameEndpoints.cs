@@ -2,6 +2,7 @@ namespace backend;
 
 using backend.Gamecomponents;
 using backend.App.GameServices;
+using backend.DTO;
 // using Microsoft.AspNetCore.SignalR; this lets the file use SignalR’s IHubContext. Needed later
 
 public record StartGameRequest(int boardSize);
@@ -58,16 +59,7 @@ public static class GameEndpoints
             return Results.Ok(response);
           });
       */
-      return Results.Ok(new
-      {
-        session.Url,
-        session.InGame,
-        session.CurrentPlayerIndex,
-        session.TurnNumber,
-        currentPlayerId = session.CurrentPlayer()?.id,
-        players = session.players,
-        board = BoardMapper.ToDto(session.Board!)
-      });
+      return Results.Ok(SessionMapper.ToDto(session));
     });
   }
 
@@ -112,17 +104,8 @@ public static class GameEndpoints
 
       session.NextTurn();
 
-      // Return updated board and new currentPlayerId (next turn initiated)
-      return Results.Ok(new
-      {
-        session.Url,
-        session.InGame,
-        session.CurrentPlayerIndex,
-        session.TurnNumber,
-        currentPlayerId = session.CurrentPlayer()?.id,
-        players = session.players,
-        board = BoardMapper.ToDto(session.Board)
-      });
+      // Return the same session DTO shape as other session endpoints.
+      return Results.Ok(SessionMapper.ToDto(session));
     });
   }
 
