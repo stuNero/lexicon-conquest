@@ -1,15 +1,21 @@
 using Xunit;
 using backend.Gamecomponents;
+using backend.App.GameServices;
 
 namespace backend.Tests;
 
 public class BoardTests
 {
+  private Board CreateBoard(int width, int height)
+  {
+    return new Board(width, height, new WordService(), "common_words");
+  }
+
   // checks that board creates correct amount of tiles
   [Fact]
   public void Board_Should_Create_Correct_Number_Of_Tiles()
   {
-    var board = new Board(10, 10);
+    var board = CreateBoard(10, 10);
 
     Assert.Equal(100, board.Tiles.Count);
   }
@@ -18,7 +24,7 @@ public class BoardTests
   [Fact]
   public void GetTile_Should_Return_Correct_Coordinates()
   {
-    var board = new Board(5, 5);
+    var board = CreateBoard(5, 5);
 
     var tile = board.GetTile(2, 3);
 
@@ -30,7 +36,7 @@ public class BoardTests
   [Fact]
   public void Middle_Tile_Should_Have_4_Neighbors()
   {
-    var board = new Board(5, 5);
+    var board = CreateBoard(5, 5);
 
     var tile = board.GetTile(2, 2);
 
@@ -41,7 +47,7 @@ public class BoardTests
   [Fact]
   public void Corner_Tile_Should_Have_2_Neighbors()
   {
-    var board = new Board(5, 5);
+    var board = CreateBoard(5, 5);
 
     var tile = board.GetTile(0, 0);
 
@@ -52,7 +58,7 @@ public class BoardTests
   [Fact]
   public void Edge_Tile_Should_Have_3_Neighbors()
   {
-    var board = new Board(5, 5);
+    var board = CreateBoard(5, 5);
 
     var tile = board.GetTile(0, 2);
 
@@ -63,7 +69,7 @@ public class BoardTests
   [Fact]
   public void Tile_Should_Not_Have_Diagonal_Neighbors()
   {
-    var board = new Board(5, 5);
+    var board = CreateBoard(5, 5);
 
     var tile = board.GetTile(2, 2);
 
@@ -84,7 +90,7 @@ public class BoardTests
   [Fact]
   public void GetTile_Should_Return_Same_Instance()
   {
-    var board = new Board(5, 5);
+    var board = CreateBoard(5, 5);
 
     var tile1 = board.GetTile(1, 1);
     var tile2 = board.GetTile(1, 1);
@@ -96,23 +102,23 @@ public class BoardTests
   [Fact]
   public void Board_Should_Throw_If_Too_Small()
   {
-    Assert.Throws<ArgumentException>(() => new Board(1, 1));
-    Assert.Throws<ArgumentException>(() => new Board(0, 5));
+    Assert.Throws<ArgumentException>(() => CreateBoard(1, 1));
+    Assert.Throws<ArgumentException>(() => CreateBoard(0, 5));
   }
 
   // checks that board throws if too large
   [Fact]
   public void Board_Should_Throw_If_Too_Large()
   {
-    Assert.Throws<ArgumentException>(() => new Board(26, 10));
-    Assert.Throws<ArgumentException>(() => new Board(10, 30));
+    Assert.Throws<ArgumentException>(() => CreateBoard(26, 10));
+    Assert.Throws<ArgumentException>(() => CreateBoard(10, 30));
   }
 
   // checks that board works for smallest valid size
   [Fact]
   public void Board_Should_Work_For_Min_Size()
   {
-    var board = new Board(2, 2);
+    var board = CreateBoard(2, 2);
 
     Assert.Equal(4, board.Tiles.Count);
   }
@@ -121,7 +127,7 @@ public class BoardTests
   [Fact]
   public void Neighbors_Should_Be_Symmetric()
   {
-    var board = new Board(5, 5);
+    var board = CreateBoard(5, 5);
 
     var tile = board.GetTile(2, 2);
     var neighbor = tile.Neighbors.First();
