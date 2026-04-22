@@ -1,7 +1,6 @@
 namespace backend;
 
-using backend.Gamecomponents;
-using backend.App.GameServices;
+using backend.DTO;
 
 
 public static class Endpoints
@@ -68,28 +67,24 @@ public static class Endpoints
 
   // get all session
   // get session by id can be accessed via url query 
-  public record sessionObject(string Url, Player[] players);
+
   public static void GetSessions(WebApplication app)
   {
-    app.MapGet("/api/sessions", (string? url, GameServer server) =>
+    app.MapGet("/api/sessions", IResult (string? url, GameServer server) =>
     {
-      // For specified search:
       if (!string.IsNullOrWhiteSpace(url))
       {
-        return server.gameSessions
-        .Where(s => s.Url == url)
-        .Select(s => new sessionObject(
-          s.Url,
-          s.players.ToArray()
-        ));
+        var sessions = server.gameSessions
+          .Where(s => s.Url == url)
+          .Select(s => SessionMapper.ToDto(s));
+
+        return Results.Ok(sessions);
       }
 
-      // For generic search
-      return server.gameSessions
-      .Select(s => new sessionObject(
-        s.Url,
-        s.players.ToArray()
-      ));
+      var allSessions = server.gameSessions
+        .Select(s => SessionMapper.ToDto(s));
+
+      return Results.Ok(allSessions);
     });
   }
 
