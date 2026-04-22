@@ -13,6 +13,8 @@ builder.Services.AddSignalR();
 builder.Services.AddDistributedMemoryCache();
 // WordService is shared so game boards can be created through dependency injection too.
 builder.Services.AddSingleton<WordService>();
+builder.Services.AddSingleton<GuessWordHandler>();
+
 
 builder.Services.AddSession(option =>
 
@@ -41,6 +43,8 @@ Endpoints.ToggleReady(app);
 Endpoints.CreateSession(app);
 GameEndpoints.StartGame(app);
 GameEndpoints.ClaimTile(app);
+GameEndpoints.GuessWord(app);
+
 
 
 // this endpoint is for render to see that backend is working fine
