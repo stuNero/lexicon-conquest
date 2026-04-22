@@ -41,6 +41,25 @@ on a map grid to get stronger and win over your opponents!
 - C#
 - xUnit
 
+## To view the game live go to:
+[lexicon-conquest.onrender.com](https://lexicon-conquest.onrender.com/)
+
+
+
+
+## Testplan
+In this project we use teststrageti that is integrated through out the whole process. Our main focus has been on TDD and BDD development. 
+We have used following tests:
+unit-test with xUnit
+API-test with Post-they
+e2e-test with Playwright and Gherkin
+
+All the tests run automatically in our CI-pipeline on every push and pull requests to DEV and main branches. From security viewpoint our pipeline checks for leaked secrets via Gitleaks, NPM Audit, dotnet list package to find any vulnarabilities in dependencies and Trivy to scan the Docker-container for critial risks. 
+
+
+## CI/CD Pipeline
+
+
 ## Contributors:
 - Amir Jafari ➡️ https://github.com/amirhamza247
 - Ha-Viet Kok ➡️ https://github.com/havietkok-sys
