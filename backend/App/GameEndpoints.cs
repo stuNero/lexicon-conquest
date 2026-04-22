@@ -12,17 +12,14 @@ public static class GameEndpoints
 {
   public static void StartGame(WebApplication app)
   {
-    app.MapPost("/api/sessions/{url}/start",
-    (string url, StartGameRequest request, GameServer server, WordService wordService) =>
-    /*
-    This is how the singnalR should look like later
-    app.MapPost("/api/sessions/{url}/start",
+    app.MapPost("/api/sessions/start/{url}",
     async (
       string url,
-      StartGameRequest request,
+      StartGameRequest? request,
+      GameServer server,
+      WordService wordService,
       IHubContext<GameHub> hubContext
     ) =>
-    */
     {
       var session = server.gameSessions.FirstOrDefault(s => s.Url == url);
 
@@ -38,28 +35,19 @@ public static class GameEndpoints
       if (session.InGame)
         return Results.BadRequest(new { message = "Game has already started" });
 
-      if (request.boardSize < 2 || request.boardSize > 25)
+      var boardSize = request?.boardSize ?? 10;
+
+      if (boardSize < 2 || boardSize > 25)
         return Results.BadRequest(new { message = "Board size must be between 2 and 25" });
 
-      session.StartGame(request.boardSize, wordService);
-      /* Och här skickar signalR sin egna respons
-      var response = new
-            {
-              session.Url,
-              session.InGame,
-              session.CurrentPlayerIndex,
-              session.TurnNumber,
-              currentPlayerId = session.CurrentPlayer()?.id,
-              players = session.players,
-              board = BoardMapper.ToDto(session.Board!)
-            };
+      session.StartGame(boardSize, wordService);
 
-            await hubContext.Clients.Group(url).SendAsync("SessionUpdated", response);
+      var sessionDto = SessionMapper.ToDto(session);
 
-            return Results.Ok(response);
-          });
-      */
-      return Results.Ok(SessionMapper.ToDto(session));
+      await hubContext.Clients.Group(url)
+        .SendAsync("SessionUpdated", sessionDto);
+
+      return Results.Ok(sessionDto);
     });
   }
 
