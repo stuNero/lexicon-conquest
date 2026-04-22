@@ -1,10 +1,13 @@
-import { useNavigate, useParams } from "react-router-dom";
-import { Check, X, Users, Copy } from 'lucide-react';
+import { useNavigate, useParams, Link } from "react-router-dom";
+import { Check, X, Users, Copy, ArrowLeft } from 'lucide-react';
 import { useEffect, useState } from "react";
 import { useSignalR } from "../utils/SignalRContext";
 import * as signalR from "@microsoft/signalr";
 import type GameSession from "../interfaces/GameSession";
 import type Player from "../interfaces/Player";
+
+
+
 
 // Färger för spelarna, varje spelare får en unik färg baserat på sin position
 const playerColors = [
@@ -97,6 +100,9 @@ export default function LobbyPage() {
   rounded-xl transition-all
 `;
 
+  const maxPlayers = Number(localStorage.getItem("playerAmount"));
+  const canStartGame = currentPlayer?.isHost && session?.players.length === maxPlayers && session.players.every(player => player.ready);
+
 
   return (
     <div className="min-h-screen relative flex items-center justify-center overflow-hidden py-6">
@@ -115,18 +121,30 @@ export default function LobbyPage() {
           gap-4 sm:gap-6
           bg-slate-900/95
           border border-emerald-500/30
-          rounded-none sm:rounded-2xl
+          rounded-2xl
+          sm:rounded-2xl
           px-4 sm:px-8 py-6 sm:py-8
           mx-0 sm:mx-5
           max-w-lg w-full
           shadow-2xl shadow-black/50
           ">
+          {/* go back to homepage button  */}
+          <div className='self-start'>
+            <Link
+              to="/"
+              className="inline-block text-white text-2xl px-4 py-1 bg-emerald-600 rounded-2xl cursor-pointer z-50"
+            >
+              <ArrowLeft />
+            </Link>
+          </div>
+
 
           {/* Title */}
           <div className="flex items-center gap-2 sm:gap-3">
             <Users className="text-emerald-400 w-6 h-6 sm:w-7 sm:h-7" />
             <h1 className="text-xl sm:text-2xl font-bold text-white">Game Lobby</h1>
           </div>
+
 
           {/* Lobby code */}
           <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-3 w-full sm:w-auto">
@@ -151,7 +169,7 @@ export default function LobbyPage() {
           </div>
           {/* Player count */}
           <p className="text-slate-400 text-sm">
-            Players: {session?.players.length ?? 0}/4
+            Players: {session?.players.length ?? 0}/{localStorage.getItem("playerAmount")}
           </p>
 
           {/* Separator */}
@@ -237,25 +255,35 @@ export default function LobbyPage() {
               </button>
             )}
 
+
+
+
+
             {currentPlayer?.isHost ? (
-              session?.players.every(player => player.ready) ? (
-                <button
-                  onClick={() => StartGame()}
-                  className={`
+              canStartGame
+                ? (
+                  <button
+                    onClick={() => StartGame()}
+                    className={`
           ${buttonBase}
           bg-emerald-500 hover:bg-emerald-400 text-white text-center
           hover:scale-[1.02] active:scale-100
         `}>
-                  Starta Spel
-                </button>
-              ) : (
-                <div className={`
+                    Starta Spel
+                  </button>
+                ) : (
+                  <div className={`
         ${buttonBase}
         bg-emerald-500/20 text-emerald-300/60 text-center
         `}>
-                  Waiting for all players to be ready...
-                </div>
-              )
+                    {maxPlayers !== session?.players.length
+                      ? "Waiting for all players to join..."
+                      : "Waiting for all players to be ready..."
+                    }
+
+
+                  </div>
+                )
             ) : (
               <div className={`
        ${buttonBase}
