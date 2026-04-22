@@ -12,11 +12,6 @@ public class GameSession
   public bool InGame { get; set; } = false;
   public int CurrentPlayerIndex { get; set; } = 0;
   public int TurnNumber { get; set; } = 1;
-
-
-
-
-
   public GameSession()
   {
     Url = Guid.NewGuid().ToString().Substring(0, 8);

@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.SignalR;
 
 public static class Endpoints
 {
-
   // new session endpoint
   public record CreateSessionRequest(string userName);
   public record NewSession(string url);
