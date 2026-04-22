@@ -4,8 +4,6 @@ import type Player from "../interfaces/Player";
 
 export default function PrintBoard({ board, players }: { board?: Board; players?: Player[]; }) {
   if (!board) return null;
-  // console.log(players);
-  console.log("board on printboard", board);
   return (
     <div
       style={{
@@ -17,7 +15,6 @@ export default function PrintBoard({ board, players }: { board?: Board; players?
     >
       {
         board.tiles?.map((tile) => {
-          // console.log(tile.word, " - ", tile.ControlledByPlayerId);
           const controllingPlayer = players?.find(p => p.id === tile.controlledByPlayerId);
           return <Tile tile={tile} playerColor={controllingPlayer?.color} key={`${tile.x}-${tile.y}`} />;
         })
