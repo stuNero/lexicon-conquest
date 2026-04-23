@@ -10,6 +10,7 @@ public class SessionDto
   public int TurnNumber { get; set; }
   public Guid? CurrentPlayerId { get; set; }
   public BoardDto? Board { get; set; }
+  public required Dictionary<Guid, int> PlayerScores { get; set; }
 }
 // DTO for the session data we want to send to the frontend.
 // This keeps the API response shape clear instead of sending the full backend GameSession object.

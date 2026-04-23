@@ -13,7 +13,8 @@ public static class SessionMapper
       CurrentPlayerIndex = session.CurrentPlayerIndex,
       TurnNumber = session.TurnNumber,
       CurrentPlayerId = session.CurrentPlayer()?.id,
-      Board = session.Board == null ? null : BoardMapper.ToDto(session.Board)
+      Board = session.Board == null ? null : BoardMapper.ToDto(session.Board),
+      PlayerScores = session.PlayerScores
     };
   }
 }
