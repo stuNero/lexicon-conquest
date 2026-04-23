@@ -5,7 +5,7 @@ export default {
     'Content-Type': 'application/json'
   },
   body: {
-    userName: "Adam"  
+    userName: "Adam"
   }
 };
 
