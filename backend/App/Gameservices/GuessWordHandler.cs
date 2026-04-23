@@ -85,7 +85,8 @@ public class GuessWordHandler
     }
     tile.ControlledByPlayerId = playerId;
 
-    if (session.PlayerScores.ContainsValue(2))
+    // WIN CONDITON
+    if (session.PlayerScores.ContainsValue(3))
     {
       session.InGame = false;
     }
