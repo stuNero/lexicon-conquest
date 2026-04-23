@@ -40,6 +40,29 @@ public class Board
     // Steg 2: koppla ihop neighbors
     ConnectedTiles();
   }
+  public static string MaskWord(string word)
+  {
+    Random _random = new();
+    if (string.IsNullOrWhiteSpace(word))
+      return "";
+
+    int blankAmount = _random.Next(2, (word.Length / 2) + 1);
+    HashSet<int> blankPositions = [];
+
+    while (blankPositions.Count < blankAmount)
+    {
+      blankPositions.Add(_random.Next(0, word.Length));
+    }
+
+    char[] maskedWord = new char[word.Length];
+
+    for (int i = 0; i < word.Length; i++)
+    {
+      maskedWord[i] = blankPositions.Contains(i) ? '_' : word[i];
+    }
+
+    return new string(maskedWord);
+  }
   //  SKAPA ALLA TILES
   private void CreateTiles()
   {
@@ -55,6 +78,8 @@ public class Board
         // give each tile a random word
 
         tile.Word = _wordService.GetRandomWord(_category);
+
+        tile.MaskWord = MaskWord(tile.Word);
 
         // Sparar den i griden 
         _grid[x, y] = tile;
