@@ -20,6 +20,9 @@ export function postResponse() {
         pm.expect(session).to.have.property('url');
         pm.expect(session).to.have.property('players');
         pm.expect(session.players).to.be.an('array');
+        pm.expect(session).to.have.property('inGame');
+        pm.expect(session).to.have.property('turnNumber');
+        pm.expect(session).to.have.property('playerScores');
       });
     }
   });

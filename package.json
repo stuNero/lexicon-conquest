@@ -12,6 +12,7 @@
     "preview": "vite preview",
     "test:xunit": "dotnet test backend/MyApp.slnx",
     "test:api": "cd post-they && npm run test:api",
+    "test:e2e:install": "npx playwright install chromium",
     "test:e2e": "npx bddgen && npx playwright test",
     "test": "npm run test:xunit && npm run test:api && npm run test:e2e"
   },
