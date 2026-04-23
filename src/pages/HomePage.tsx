@@ -22,12 +22,14 @@ export default function HomePage() {
 
 
 
+  localStorage.setItem("playerAmount", playerAmount);
+
   const switchToCreate = () => {
     setActiveBtn('create');
     // Clear all fields when switching to create
     setUserName('');
-    setPlayerAmount('');
-    setBoardSize('');
+    setPlayerAmount('2');
+    setBoardSize('10');
   };
 
 
@@ -99,12 +101,6 @@ export default function HomePage() {
         <div className="absolute inset-0 bg-linear-to-b from-black/20 via-black/50 to-black/40" />
 
       </div>
-
-
-
-
-      {/* main content */}
-      {/* main content */}
       <div className="relative z-10 w-full max-w-6xl mx-auto px-4 sm:px-6 md:px-8">
 
         <div className='flex flex-col lg:flex-row items-center justify-center gap-14'>
