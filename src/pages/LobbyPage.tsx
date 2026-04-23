@@ -57,6 +57,32 @@ export default function LobbyPage() {
   }
 
   useEffect(() => {
+    if (!id) {
+      navigate("/");
+      return;
+    }
+
+    const checkSessionExists = async () => {
+      try {
+        const response = await fetch(`/api/sessions?url=${encodeURIComponent(id)}`);
+
+        if (!response.ok) {
+          navigate("/");
+          return;
+        }
+
+        const sessions: GameSession[] = await response.json();
+
+        if (sessions.length === 0) {
+          navigate("/");
+        }
+      } catch (error) {
+        console.error(error);
+        navigate("/");
+      }
+    };
+
+    checkSessionExists();
     if (connection.state === signalR.HubConnectionState.Connected) {
       connection.invoke("JoinSession", id).catch(console.error);
     }
