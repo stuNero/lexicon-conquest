@@ -1,46 +1,62 @@
 import { useState } from "react";
 import type Tile from "../interfaces/Tile";
 import WordPopUp from "./WordPopUp";
-import fetchJson from "../utils/fetchJson";
+import Player from "../interfaces/Player";
+import GameSession from "../interfaces/GameSession";
 
-export default function PrintTile({ tile, playerColor }: { tile: Tile; playerColor?: string; }) {
+export default function PrintTile({ tile, localPlayer, controllingPlayer, session }: { tile: Tile; localPlayer?: Player; controllingPlayer?: Player; session?: GameSession; }) {
   const [showPopup, setShowPopup] = useState(false);
-  async function claimTile(x: number, y: number) {
-    const response = await fetchJson(`/api/sessions/${localStorage.getItem("sessionID")}/claim-tile`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          playerID: localStorage.getItem("playerID"),
-          x: x,
-          y: y
-        })
-      });
-    console.log(response);
-  };
+  function replaceBlanks(word: string, blankChar: string = "_") {
+    return (
+      <div className="flex items-center justify-center whitespace-nowrap">
+        {word.split("").map((char, index) => {
+          const isBlank = char === blankChar;
+
+          return (
+            <span
+              key={index}
+              className={`
+              inline-flex shrink-0 items-center justify-center
+              h-6 ${isBlank ? "w-3 mx-0.5" : "w-auto px-px"}
+              rounded text-sm font-semibold
+              ${isBlank
+                  ? "border-2 border-slate-300 bg-white text-black"
+                  : "text-white"}
+            `}
+            >
+              {isBlank ? "" : char}
+            </span>
+          );
+        })}
+      </div>
+    );
+  }
   return (
     <>
       <button
         onClick={() => {
-          claimTile(tile.x, tile.y);
-          setShowPopup(true);
+          if (localPlayer?.id === session?.currentPlayerId) {
+            setShowPopup(true);
+          }
         }}
         style={{
           gridColumn: tile.x + 1,
           gridRow: tile.y + 1
         }}
         className={`
-        aspect-square border
-        h-fit px-2
-        flex text-center items-center
-        ${playerColor || "bg-stone-500"}
-        hover:bg-stone-600 bg-cover
-      `}>
-        {tile.word}
+          aspect-square border rounded
+          px-2
+          flex items-center justify-center
+          overflow-hidden
+          ${controllingPlayer?.color || "bg-stone-500"}
+          hover:bg-stone-600 bg-cover
+        `}>
+        {replaceBlanks(tile.word)}
       </button>
-      {showPopup && <WordPopUp word={tile.word} onClose={() => setShowPopup(false)} />}
+      {showPopup && <WordPopUp
+        tile={tile}
+        onClose={() => setShowPopup(false)}
+      />}
     </>
   );
 };
