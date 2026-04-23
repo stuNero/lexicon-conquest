@@ -1,8 +1,9 @@
 import Tile from "./PrintTile";
 import type Board from "../interfaces/Board";
 import type Player from "../interfaces/Player";
+import GameSession from "../interfaces/GameSession";
 
-export default function PrintBoard({ board, players }: { board?: Board; players?: Player[]; }) {
+export default function PrintBoard({ board, players, session }: { board?: Board; players?: Player[]; session?: GameSession; }) {
   if (!board) return null;
   return (
     <div
@@ -16,7 +17,14 @@ export default function PrintBoard({ board, players }: { board?: Board; players?
       {
         board.tiles?.map((tile) => {
           const controllingPlayer = players?.find(p => p.id === tile.controlledByPlayerId);
-          return <Tile tile={tile} playerColor={controllingPlayer?.color} key={`${tile.x}-${tile.y}`} />;
+          const localPlayer = players?.find(p => p.id === localStorage.getItem("playerID"));
+          return <Tile
+            key={`${tile.x}-${tile.y}`}
+            tile={tile}
+            controllingPlayer={controllingPlayer}
+            localPlayer={localPlayer}
+            session={session}
+          />;
         })
       }
     </div>
