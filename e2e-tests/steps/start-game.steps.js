@@ -33,7 +33,7 @@ Given('another player {string} joins the session', async ({ page }, playerName) 
     const response = await fetch(`/api/sessions/${sessionUrl}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username: playerName })
+      body: JSON.stringify({ userName: playerName, ready: false })
     });
     const body = await response.json();
     return { status: response.status, body };
@@ -70,7 +70,8 @@ Then('the host can start the game', async ({ page }) => {
   const result = await page.evaluate(async (sessionUrl) => {
     const response = await fetch(`/api/sessions/start/${sessionUrl}`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' }
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ boardSize: 10 })
     });
     const body = await response.json();
     return { status: response.status, body };
@@ -78,6 +79,7 @@ Then('the host can start the game', async ({ page }) => {
 
   expect(result.status).toBe(200);
   expect(result.body).toHaveProperty('inGame', true);
+  expect(result.body).toHaveProperty('board');
 });
 
 Then('the session is marked as inGame', async ({ page }) => {

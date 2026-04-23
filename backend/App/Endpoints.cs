@@ -1,36 +1,16 @@
-using Microsoft.AspNetCore.SignalR;
-
 namespace backend;
 
+using backend.DTO;
+using Microsoft.AspNetCore.SignalR;
 
 public static class Endpoints
 {
-  public static void StartGame(WebApplication app)
-  {
-    app.MapPost("/api/sessions/start/{url}", async (
-      string url,
-      GameServer server,
-      IHubContext<GameHub> hubContext
-    ) =>
-    {
-      var session = server.gameSessions.FirstOrDefault((s) => s.Url == url);
-
-      if (session == null)
-        return Results.NotFound(new { message = $"Session: [{url}] doesn't exist" });
-      if (!session.players.All((p) => p.Ready))
-        return Results.BadRequest(new { message = "Not all players are ready" });
-
-      session.InGame = true;
-      await hubContext.Clients.Group(url).SendAsync("SessionUpdated", session);
-      return Results.Ok(session);
-    });
-  }
   // new session endpoint
   public record CreateSessionRequest(string userName);
   public record NewSession(string url);
   public static void CreateSession(WebApplication app)
   {
-    app.MapPost("/api/sessions", (GameServer server, CreateSessionRequest request) =>
+    app.MapPost("/api/sessions", (CreateSessionRequest request, GameServer engine) =>
     {
 
       if (request == null || string.IsNullOrWhiteSpace(request.userName))
@@ -47,7 +27,7 @@ public static class Endpoints
       {
         url = Guid.NewGuid().ToString().Substring(0, 8);
       }
-      while (server.gameSessions.Any(s => s.Url == url));
+      while (engine.gameSessions.Any(s => s.Url == url));
 
       var session = new GameSession
       {
@@ -55,55 +35,70 @@ public static class Endpoints
         players = new List<Player>()
       };
 
-      // add creator as first player
-      var newPlayer = new Player(userName: request.userName, ready: false, isHost: true);
-      session.players.Add(newPlayer);
-      server.gameSessions.Add(session);
+      /* Save the host player in a variable so we can return it directly to the frontend. T
+       The frontend needs this player's id for localStorage after creating a lobby.
+       This is not ideal, i would prefer every data contract via DTOs
+        */
+      var hostPlayer = new Player(
+        userName: request.userName,
+        ready: false,
+        isHost: true
+      );
+
+      session.players.Add(hostPlayer);
+      engine.gameSessions.Add(session);
 
       return Results.Created($"/api/sessions/{url}", new
       {
+        message = "Session created",
         url = url,
-        player = newPlayer
+
+        // Keep players for backwards compatibility with code that already reads the full player list.
+        players = session.players,
+
+        // Add player so the frontend can read response.player.id directly. 
+        player = hostPlayer
       });
+
 
     });
   }
 
   // get all session
   // get session by id can be accessed via url query 
-  public record sessionObject(string Url, Player[] players, bool inGame);
+
   public static void GetSessions(WebApplication app)
   {
-    app.MapGet("/api/sessions", async (GameServer server, string? url, IHubContext<GameHub> hubContext) =>
+    app.MapGet("/api/sessions", IResult (string? url, GameServer server) =>
     {
-      // For specified search:
       if (!string.IsNullOrWhiteSpace(url))
       {
-        await hubContext.Clients.Group(url).SendAsync("SessionUpdated", server.gameSessions
-        .Where(s => s.Url == url)
-        .Select(s => new sessionObject(
-          s.Url,
-          s.players.ToArray(),
-          s.InGame
-          )));
+        var sessions = server.gameSessions
+          .Where(s => s.Url == url)
+          .Select(s => SessionMapper.ToDto(s));
+
+        return Results.Ok(sessions);
       }
-      // For generic search
-      return server.gameSessions
-      .Select(s => new sessionObject(
-        s.Url,
-        s.players.ToArray(),
-        s.InGame
-        ));
+
+      var allSessions = server.gameSessions
+        .Select(s => SessionMapper.ToDto(s));
+
+      return Results.Ok(allSessions);
     });
   }
-  public record NewPlayer(string userName, bool IsHost, bool ready = false);
+
+
+
+  public record NewPlayer(string userName, bool ready = false);
+
   public static void CreatePlayer(WebApplication app)
   {
-    app.MapPost("/api/sessions/{url}",
-    async (string url,
-    GameServer server,
+    app.MapPost("/api/sessions/{url}", async (
+    string url,
     NewPlayer createP,
-    IHubContext<GameHub> hubContext) =>
+    GameServer server,
+    IHubContext<GameHub> hubContext
+  ) =>
     {
       var session = server.gameSessions.FirstOrDefault(s => s.Url == url);
       if (session == null)
@@ -125,23 +120,28 @@ public static class Endpoints
         userName: createP.userName,
         ready: createP.ready,
         isHost: false
-        );
+      );
 
       session.players.Add(newPlayer);
 
+      // Tell everyone in the lobby that the player list changed.
+      var sessionDto = SessionMapper.ToDto(session);
+
       await hubContext.Clients.Group(url)
-        .SendAsync("SessionUpdated", session);
+        .SendAsync("SessionUpdated", sessionDto);
+
       return Results.Ok(newPlayer);
     });
   }
   public static void DeleteSession(WebApplication app)
   {
-    app.MapDelete("/api/sessions/{url}", (GameServer server, string url) =>
+    app.MapDelete("/api/sessions/{url}", async (string url, GameServer server, IHubContext<GameHub> hubContext) =>
     {
       if (!server.gameSessions.Exists(s => s.Url == url))
       {
         return Results.NotFound(new { message = $"Session with url: {url} could not be found" });
       }
+      await hubContext.Clients.Group(url).SendAsync("SessionClosed");
       server.gameSessions.RemoveAll(s => s.Url == url);
 
       return Results.Ok();
@@ -149,7 +149,12 @@ public static class Endpoints
   }
   public static void ToggleReady(WebApplication app)
   {
-    app.MapPut("/api/players/", async (GameServer server, string url, Guid id, IHubContext<GameHub> hubContext) =>
+    app.MapPut("/api/players/", async (
+      GameServer server,
+      string url,
+      Guid id,
+      IHubContext<GameHub> hubContext
+    ) =>
     {
       foreach (GameSession session in server.gameSessions)
       {
@@ -163,15 +168,23 @@ public static class Endpoints
                 player.Ready = false;
               else if (!player.Ready)
                 player.Ready = true;
+
+              var sessionDto = SessionMapper.ToDto(session);
+
               await hubContext.Clients.Group(url)
-                .SendAsync("SessionUpdated", session);
-              return Results.Ok();
+                .SendAsync("SessionUpdated", sessionDto);
+
+              return Results.Ok(sessionDto);
             }
           }
+
           return Results.NotFound(new { message = $"Player with id: {id} could not be found" });
         }
       }
+
       return Results.NotFound(new { message = $"Session with url: {url} could not be found" });
     });
   }
-}
+
+};
+

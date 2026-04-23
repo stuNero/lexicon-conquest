@@ -1,5 +1,7 @@
 namespace backend.Gamecomponents;
 
+using backend.App.GameServices;
+
 // Board = hela spelplanen den är dynamisk så - var board = new Board(10, 10); när du behöver ett board så kan du bestämma storlek
 public class Board
 {
@@ -12,9 +14,12 @@ public class Board
   private int _width;
   private int _height;
 
-  public Board(int width, int height)
+  private readonly WordService _wordService;
+  private string _category;
+  public Board(int width, int height, WordService wordService, string category)
   {
-
+    _wordService = wordService;
+    _category = category;
     // MIN: 2x2
     if (width < 2 || height < 2)
       throw new ArgumentException("Board must be at least 2x2");
@@ -35,6 +40,29 @@ public class Board
     // Steg 2: koppla ihop neighbors
     ConnectedTiles();
   }
+  public static string MaskWord(string word)
+  {
+    Random _random = new();
+    if (string.IsNullOrWhiteSpace(word))
+      return "";
+
+    int blankAmount = _random.Next(2, (word.Length / 2) + 1);
+    HashSet<int> blankPositions = [];
+
+    while (blankPositions.Count < blankAmount)
+    {
+      blankPositions.Add(_random.Next(0, word.Length));
+    }
+
+    char[] maskedWord = new char[word.Length];
+
+    for (int i = 0; i < word.Length; i++)
+    {
+      maskedWord[i] = blankPositions.Contains(i) ? '_' : word[i];
+    }
+
+    return new string(maskedWord);
+  }
   //  SKAPA ALLA TILES
   private void CreateTiles()
   {
@@ -47,6 +75,12 @@ public class Board
         // Skapar en ny tile på position (x, y)
         var tile = new Tile(x, y);
 
+        // give each tile a random word
+
+        tile.Word = _wordService.GetRandomWord(_category);
+
+        tile.MaskWord = MaskWord(tile.Word);
+
         // Sparar den i griden 
         _grid[x, y] = tile;
 
@@ -57,7 +91,7 @@ public class Board
   }
 
 
-  //STEG 2: KOPPLA GRANNAR
+  //STEG 2: KOPPLA GRANNAR 
 
   private void ConnectedTiles()
   {

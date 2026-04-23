@@ -12,9 +12,17 @@ public class Tile
   // List over neighbors (adjacent tiles)
   public List<Tile> Neighbors { get; } = new List<Tile>();
 
+  // each tile has a word
+  public string Word { get; set; }
+  public string MaskWord { get; set; }
+
+  public Guid ControlledByPlayerId { get; set; }
   public Tile(int x, int y)
   {
     X = x;
     Y = y;
+    Word = "";
+    MaskWord = "";
+    ControlledByPlayerId = Guid.Empty;
   }
 }

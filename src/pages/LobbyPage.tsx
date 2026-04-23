@@ -1,28 +1,14 @@
 import { useNavigate, useParams, Link } from "react-router-dom";
-import { Check, X, Users, Copy, ArrowLeft } from 'lucide-react';
+import { Users, Copy, ArrowLeft } from 'lucide-react';
 import { useEffect, useState } from "react";
 import { useSignalR } from "../utils/SignalRContext";
 import * as signalR from "@microsoft/signalr";
 import type GameSession from "../interfaces/GameSession";
 import type Player from "../interfaces/Player";
+import PlayerCard from "../components/PlayerCard";
+import { buttonBase } from "../utils/TailwindStyles";
 
 
-
-
-// Färger för spelarna, varje spelare får en unik färg baserat på sin position
-const playerColors = [
-  "bg-red-500",
-  "bg-blue-500",
-  "bg-emerald-500",
-  "bg-amber-500",
-];
-
-const playerBorders = [
-  "border-red-500/50",
-  "border-blue-500/50",
-  "border-emerald-500/50",
-  "border-amber-500/50",
-];
 
 export default function LobbyPage() {
   const navigate = useNavigate();
@@ -40,7 +26,10 @@ export default function LobbyPage() {
   async function StartGame() {
     await fetch(`/api/sessions/start/${id}`, {
       method: "POST",
-      headers: { 'Content-Type': 'application/json' }
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        boardSize: localStorage.getItem("boardSize"),
+      })
     });
   }
 
@@ -54,6 +43,32 @@ export default function LobbyPage() {
   }
 
   useEffect(() => {
+    if (!id) {
+      navigate("/");
+      return;
+    }
+
+    const checkSessionExists = async () => {
+      try {
+        const response = await fetch(`/api/sessions?url=${encodeURIComponent(id)}`);
+
+        if (!response.ok) {
+          navigate("/");
+          return;
+        }
+
+        const sessions: GameSession[] = await response.json();
+
+        if (sessions.length === 0) {
+          navigate("/");
+        }
+      } catch (error) {
+        console.error(error);
+        navigate("/");
+      }
+    };
+
+    checkSessionExists();
     if (connection.state === signalR.HubConnectionState.Connected) {
       connection.invoke("JoinSession", id).catch(console.error);
     }
@@ -84,21 +99,6 @@ export default function LobbyPage() {
 
   const myId = localStorage.getItem("playerID");
 
-  const cardBase = `
-  flex items-center
-  gap-3 sm:gap-4
-  px-3 sm:px-5 py-3 sm:py-4
-  bg-slate-800/80 rounded-xl
-  transition-all border
-`;
-
-  const labelSmall = "text-xs uppercase tracking-widest font-semibold";
-
-  const buttonBase = `
-  w-full py-2.5 sm:py-3
-  text-sm sm:text-base font-bold
-  rounded-xl transition-all
-`;
 
   const maxPlayers = Number(localStorage.getItem("playerAmount"));
   const canStartGame = currentPlayer?.isHost && session?.players.length === maxPlayers && session.players.every(player => player.ready);
@@ -112,7 +112,7 @@ export default function LobbyPage() {
           src="/bg-image.png"
           className="w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/50 to-black/40" />
+        <div className="absolute inset-0 bg-linear-to-b from-black/20 via-black/50 to-black/40" />
       </div>
       <div className="relative z-10 w-full flex justify-center px-4">
 
@@ -173,7 +173,7 @@ export default function LobbyPage() {
           </p>
 
           {/* Separator */}
-          <div className="h-px w-full bg-gradient-to-r from-transparent via-slate-600 to-transparent" />
+          <div className="h-px w-full bg-linear-to-r from-transparent via-slate-600 to-transparent" />
 
           {/* Players heading */}
           <h2 className="text-base sm:text-lg font-bold text-white self-start">Players</h2>
@@ -184,51 +184,13 @@ export default function LobbyPage() {
               // Kolla om det här kortet är DIN spelare
               const isMe = player.id === myId;
               return (
-                <div
-                  key={player.id}
-                  className={`
-              ${cardBase}
-              ${isMe ? "border-slate-500" : playerBorders[index % 4]}
-              ${isMe ? "shadow-[0_0_15px_rgba(100,116,139,0.15)]" : ""}
-              `}
-                >
-                  <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full ${playerColors[index % 4]} shrink-0`} />
-
-                  <div className="flex flex-col flex-1">
-                    <span className="text-white font-semibold">{player.userName}</span>
-                    <div className="flex gap-2">
-                      {player.isHost && <span className={`${labelSmall} text-slate-400`}>Host</span>}
-                      {isMe && <span className={`${labelSmall} text-emerald-400`}>You</span>}
-                    </div>
-                  </div>
-
-                  {isMe ? (
-                    <button
-                      onClick={ToggleReady}
-                      className={`
-                    flex items-center gap-1 text-sm font-semibold
-                    px-3 py-1 rounded-lg
-                    transition-all hover:scale-105
-                    ${player.ready
-                          ? "text-emerald-400 hover:bg-emerald-500/10"
-                          : "text-red-400 hover:bg-red-500/10"
-                        }
-                  `}
-                    >
-                      {player.ready
-                        ? <><Check className="w-4 h-4" /> Ready</>
-                        : <><X className="w-4 h-4" /> Not Ready</>
-                      }
-                    </button>
-                  ) : (
-                    <span className={`flex items-center gap-1 text-sm font-semibold ${player.ready ? "text-emerald-400" : "text-red-400"}`}>
-                      {player.ready
-                        ? <><Check className="w-4 h-4" /> Ready</>
-                        : <><X className="w-4 h-4" /> Not Ready</>
-                      }
-                    </span>
-                  )}
-                </div>
+                <PlayerCard
+                  index={index}
+                  player={player}
+                  isMe={isMe}
+                  sessionID={id}
+                  showReady={true}
+                />
               );
             })}
           </div>

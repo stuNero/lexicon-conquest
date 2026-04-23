@@ -3,4 +3,5 @@ export default interface Player {
   userName: string,
   ready: boolean,
   isHost: boolean;
+  color: string;
 };
