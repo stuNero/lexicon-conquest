@@ -7,5 +7,7 @@ export default interface GameSession {
   inGame: boolean,
   currentPlayerIndex: number,
   turnNumber: number,
+  currentPlayerId: string | null,
   board: Board;
+  playerScores: Record<string, number>;
 };
