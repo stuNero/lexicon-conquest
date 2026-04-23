@@ -3,11 +3,10 @@ import type Tile from "../interfaces/Tile";
 import WordPopUp from "./WordPopUp";
 import fetchJson from "../utils/fetchJson";
 
-
 export default function PrintTile({ tile, playerColor }: { tile: Tile; playerColor?: string; }) {
   const [showPopup, setShowPopup] = useState(false);
   async function claimTile(x: number, y: number) {
-    await fetchJson(`/api/sessions/${localStorage.getItem("sessionID")}/claim-tile`,
+    const response = await fetchJson(`/api/sessions/${localStorage.getItem("sessionID")}/claim-tile`,
       {
         method: "POST",
         headers: {
@@ -19,13 +18,14 @@ export default function PrintTile({ tile, playerColor }: { tile: Tile; playerCol
           y: y
         })
       });
+    console.log(response);
   };
   return (
     <>
       <button
         onClick={() => {
-          setShowPopup(true);
           claimTile(tile.x, tile.y);
+          setShowPopup(true);
         }}
         style={{
           gridColumn: tile.x + 1,
