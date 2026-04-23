@@ -19,16 +19,12 @@ public static class BoardMapper
       dto.Tiles.Add(new TileDto(
      tile.X,
      tile.Y,
-     tile.Word,
+     tile.MaskWord,
      tile.ControlledByPlayerId
    ));
     }
     // Return clean data ready for frontend
     return dto;
   }
+
 }
-// IMPORTANT:
-// We NEVER send the real Board object directly to frontend
-// because it contains internal logic and references (like neighbors)
-// Instead we convert it into a simple DTO that is safe and easy to use
-// Think DTO as the format we want to send to Frontend and Mapper as the transformer for that data

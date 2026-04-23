@@ -10,6 +10,16 @@ public record GuessWordResult(
 
 public class GuessWordHandler
 {
+  public static void AddScore(Dictionary<Guid, int> scores, Guid playerId, int amount)
+  {
+    scores.TryAdd(playerId, 0);
+    scores[playerId] += amount;
+  }
+  public static void SubScore(Dictionary<Guid, int> scores, Guid playerId, int amount)
+  {
+    scores.TryAdd(playerId, 0);
+    scores[playerId] -= amount;
+  }
   public GuessWordResult Handle(
     string url,
     Guid playerId,
@@ -58,16 +68,34 @@ public class GuessWordHandler
       StringComparison.OrdinalIgnoreCase
     );
 
+    var sessionDto = SessionMapper.ToDto(session);
+
     if (!wordMatches)
-      return new GuessWordResult(false, "Fel ord SOPA!", null);
+    {
+      session.NextTurn();
+      sessionDto = SessionMapper.ToDto(session);
+      return new GuessWordResult(false, "Fel ord SOPA!", sessionDto);
+    }
 
     // The guess was correct, so this is where the tile gets claimed.
+    AddScore(session.PlayerScores, playerId, 1);
+    if (tile.ControlledByPlayerId != Guid.Empty)
+    {
+      SubScore(session.PlayerScores, tile.ControlledByPlayerId, 1);
+    }
     tile.ControlledByPlayerId = playerId;
 
-    // After a successful claim, move to the next player.
-    session.NextTurn();
+    // WIN CONDITON
+    if (session.PlayerScores.ContainsValue(3))
+    {
+      session.InGame = false;
+    }
 
-    var sessionDto = SessionMapper.ToDto(session);
+
+    session.NextTurn();
+    // After a successful claim, move to the next player.
+
+    sessionDto = SessionMapper.ToDto(session);
 
     return new GuessWordResult(true, "Correct word", sessionDto);
   }

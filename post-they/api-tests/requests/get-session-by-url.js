@@ -26,4 +26,10 @@ export function postResponse() {
     pm.expect(json[0]).to.have.property('players');
     pm.expect(json[0].players).to.be.an('array');
   });
+
+  pm.test('Session contains game state fields', () => {
+    pm.expect(json[0]).to.have.property('inGame');
+    pm.expect(json[0]).to.have.property('turnNumber');
+    pm.expect(json[0]).to.have.property('playerScores');
+  });
 }

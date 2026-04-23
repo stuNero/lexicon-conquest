@@ -6,10 +6,6 @@ using backend.DTO;
 using Microsoft.AspNetCore.SignalR;
 
 public record StartGameRequest(int boardSize);
-public record ClaimTileRequest(Guid playerId, int x, int y);
-
-public record GuessWordRequest(Guid playerId, int x, int y, string word);
-
 
 public static class GameEndpoints
 {
@@ -53,63 +49,62 @@ public static class GameEndpoints
       return Results.Ok(sessionDto);
     });
   }
+  public record ClaimTileRequest(Guid playerId, int x, int y);
 
   public static void ClaimTile(WebApplication app)
   {
-    app.MapPost("/api/sessions/{url}/claim-tile",
- async (
-   string url,
-   ClaimTileRequest request,
-   GameServer server,
-   IHubContext<GameHub> hubContext
- ) =>
- {
+    app.MapPost("/api/sessions/{url}/claim-tile", async (
+      string url,
+      ClaimTileRequest request,
+      GameServer server,
+      IHubContext<GameHub> hubContext
+    ) =>
+  {
 
-   var session = server.gameSessions.FirstOrDefault(s => s.Url == url);
+    var session = server.gameSessions.FirstOrDefault(s => s.Url == url);
 
-   if (session == null)
-     return Results.NotFound(new { message = "Session not found" });
+    if (session == null)
+      return Results.NotFound(new { message = "Session not found" });
 
-   if (!session.InGame)
-     return Results.BadRequest(new { message = "Game has not started" });
+    if (!session.InGame)
+      return Results.BadRequest(new { message = "Game has not started" });
 
-   if (session.Board == null)
-     return Results.BadRequest(new { message = "Board has not been created" });
+    if (session.Board == null)
+      return Results.BadRequest(new { message = "Board has not been created" });
 
-   var currentPlayer = session.CurrentPlayer();
+    var currentPlayer = session.CurrentPlayer();
+    if (currentPlayer != null)
+    {
+      if (currentPlayer.id != request.playerId)
+        return Results.BadRequest(new { message = "It is not this player's turn" });
+    }
 
-   if (currentPlayer == null)
-     return Results.BadRequest(new { message = "No current player" });
+    // Find the clicked tile
+    var tile = session.Board.Tiles.FirstOrDefault(t =>
+      t.X == request.x &&
+      t.Y == request.y
+    );
 
-   if (currentPlayer.id != request.playerId)
-     return Results.BadRequest(new { message = "It is not this player's turn" });
+    if (tile == null)
+      return Results.BadRequest(new { message = "Tile does not exist" });
 
-   // Find the clicked tile
-   var tile = session.Board.Tiles.FirstOrDefault(t =>
-     t.X == request.x &&
-     t.Y == request.y
-   );
+    if (tile.ControlledByPlayerId == request.playerId)
+      return Results.BadRequest(new { message = "You already control this tile" });
 
-   if (tile == null)
-     return Results.BadRequest(new { message = "Tile does not exist" });
+    //  Claim / steal the tile
+    tile.ControlledByPlayerId = request.playerId;
 
-   if (tile.ControlledByPlayerId == request.playerId)
-     return Results.BadRequest(new { message = "You already control this tile" });
+    session.NextTurn();
 
-   //  Claim / steal the tile
-   tile.ControlledByPlayerId = request.playerId;
+    // Build the DTO once so SignalR and HTTP return the same data shape.
+    var sessionDto = SessionMapper.ToDto(session);
 
-   session.NextTurn();
-
-   // Build the DTO once so SignalR and HTTP return the same data shape.
-   var sessionDto = SessionMapper.ToDto(session);
-
-   await hubContext.Clients.Group(url)
-     .SendAsync("SessionUpdated", sessionDto);
-
-   return Results.Ok(sessionDto);
- });
+    await hubContext.Clients.Group(url)
+      .SendAsync("SessionUpdated", sessionDto);
+    return Results.Ok(sessionDto);
+  });
   }
+  public record GuessWordRequest(Guid playerId, int x, int y, string word);
   public static void GuessWord(WebApplication app)
   {
     app.MapPost("/api/sessions/{url}/guess-word", async (
@@ -128,9 +123,12 @@ public static class GameEndpoints
         request.word,
         server
       );
-
       if (!result.Success)
+      {
+        await hubContext.Clients.Group(url)
+        .SendAsync("SessionUpdated", result.Session);
         return Results.BadRequest(new { message = result.Message });
+      }
 
       await hubContext.Clients.Group(url)
         .SendAsync("SessionUpdated", result.Session);
@@ -140,81 +138,3 @@ public static class GameEndpoints
   }
 
 }
-
-/* Endpoint example POST http://localhost:5000/api/sessions/{url}/start
-{
-  "boardSize": 10
-}
-Expected respons
-{
-  "url": "abc12345",
-  "inGame": true,
-  "currentPlayerIndex": 0,
-  "turnNumber": 1,
-  "currentPlayerId": "PLAYER_GUID_HERE",
-  "players": [
-    {
-      "id": "PLAYER_GUID_HERE",
-      "userName": "Havie",
-      "ready": true
-    }
-  ],
-  "board": {
-    "width": 10,
-    "height": 10,
-    "tiles": [
-      {
-        "x": 0,
-        "y": 0,
-        "word": "example",
-        "controlledByPlayerId": null
-      }
-    ]
-  }
-}
-*/
-
-
-/* Claim tile api for postman 
-POST http://localhost:5000/api/sessions/{url}/claim-tile
-Body:
-{
-  "playerId": "PUT_CURRENT_PLAYER_ID_HERE",
-  "x": 0,
-  "y": 0
-}
-Header:Content-Type: application/json been automatic for me.
-
-Respond should look something like this
-{
-  "url": "abc12345",
-  "inGame": true,
-  "currentPlayerIndex": 1,
-  "turnNumber": 2,
-  "currentPlayerId": "NEXT_PLAYER_ID_HERE",
-  "players": [
-    {
-      "id": "PLAYER_1_ID",
-      "userName": "Havvi",
-      "ready": true
-    },
-    {
-      "id": "PLAYER_2_ID",
-      "userName": "Alex",
-      "ready": true
-    }
-  ],
-  "board": {
-    "width": 10,
-    "height": 10,
-    "tiles": [
-      {
-        "x": 0,
-        "y": 0,
-        "word": "example",
-        "controlledByPlayerId": "PUT_CURRENT_PLAYER_ID_HERE"
-      }
-    ]
-  }
-}
-*/

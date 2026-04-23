@@ -18,9 +18,15 @@ export default defineConfig({
     ['html', { outputFolder: 'playwright-report', open: 'never' }]
   ],
   use: {
-    baseURL: 'http://localhost:5001',
+    baseURL: 'http://localhost:5173',
     trace: 'retain-on-failure',
     screenshot: 'only-on-failure'
+  },
+  webServer: {
+    command: 'npm run start',
+    url: 'http://localhost:5173',
+    reuseExistingServer: true,
+    timeout: 120_000
   },
   projects: [
     {

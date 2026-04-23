@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.SignalR;
 
 public static class Endpoints
 {
-
   // new session endpoint
   public record CreateSessionRequest(string userName);
   public record NewSession(string url);
@@ -136,12 +135,13 @@ public static class Endpoints
   }
   public static void DeleteSession(WebApplication app)
   {
-    app.MapDelete("/api/sessions/{url}", (string url, GameServer server) =>
+    app.MapDelete("/api/sessions/{url}", async (string url, GameServer server, IHubContext<GameHub> hubContext) =>
     {
       if (!server.gameSessions.Exists(s => s.Url == url))
       {
         return Results.NotFound(new { message = $"Session with url: {url} could not be found" });
       }
+      await hubContext.Clients.Group(url).SendAsync("SessionClosed");
       server.gameSessions.RemoveAll(s => s.Url == url);
 
       return Results.Ok();

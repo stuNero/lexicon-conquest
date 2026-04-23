@@ -12,12 +12,8 @@ export function postResponse() {
   const playerId = pm.collectionVariables.get('playerId');
   const player = json.players.find(player => player.id === playerId);
 
-  pm.test('Response contains updated session', () => {
-    pm.expect(json).to.have.property('url', pm.collectionVariables.get('sessionUrl'));
-    pm.expect(json).to.have.property('players');
-  });
-
-  pm.test('Player ready state changed', () => {
+  pm.test('Joined player is ready again', () => {
     pm.expect(player).to.exist;
+    pm.expect(player.ready).to.equal(true);
   });
 }

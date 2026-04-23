@@ -7,20 +7,16 @@ public class GameSession
   public string Url { get; set; }
   public List<Player> players { get; set; }
   public Board? Board { get; set; }
-
   //Nytt
   public bool InGame { get; set; } = false;
   public int CurrentPlayerIndex { get; set; } = 0;
   public int TurnNumber { get; set; } = 1;
-
-
-
-
-
+  public Dictionary<Guid, int> PlayerScores { get; set; }
   public GameSession()
   {
     Url = Guid.NewGuid().ToString().Substring(0, 8);
     players = new List<Player>();
+    PlayerScores = new Dictionary<Guid, int>();
   }
   public Player? CurrentPlayer()
   {
