@@ -9,9 +9,6 @@ import { useNavigate } from 'react-router-dom';
 import fetchJson from '../utils/fetchJson';
 import Player from '../interfaces/Player';
 
-
-
-
 export default function HomePage() {
   const navigate = useNavigate();
   const [activeBtn, setActiveBtn] = useState('join');
@@ -19,8 +16,6 @@ export default function HomePage() {
   const [playerAmount, setPlayerAmount] = useState('2');
   const [boardSize, setBoardSize] = useState('10');
   const [url, setUrl] = useState('');
-
-
 
   localStorage.setItem("playerAmount", playerAmount);
 
@@ -32,8 +27,6 @@ export default function HomePage() {
     setBoardSize('10');
   };
 
-
-
   const switchToJoin = () => {
     setActiveBtn('join');
     // Clear field when switiching to Join
@@ -41,8 +34,6 @@ export default function HomePage() {
     setUserName('');
 
   };
-
-
 
   const CreateLobby = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -65,11 +56,7 @@ export default function HomePage() {
 
     navigate(`lobby/${response.url}`);
     return;
-
   };
-
-
-
 
   const JoinLobby = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault(); // 
@@ -86,7 +73,6 @@ export default function HomePage() {
     localStorage.setItem("playerID", response.id);
     navigate(`/lobby/${url}`);
     return;
-
   };
 
   return <>
